@@ -16,7 +16,7 @@ const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
-camera.position.set(6, 3, 8);
+camera.position.set(0, 0, 8);
 camera.lookAt(new Vector3(0, 0, 0));
 
 // Set up renderer, canvas, and minor CSS adjustments
@@ -35,12 +35,27 @@ controls.minDistance = 4;
 controls.maxDistance = 16;
 controls.update();
 
+
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
     controls.update();
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
     window.requestAnimationFrame(onAnimationFrameHandler);
+
+    while (scene.cylinders[0] && scene.cylinders[0].position.z > camera.position.z + 20/2) {
+    	scene.addCylinder();
+    }
+
+    let spherePos = scene.sphere.position.clone().setZ(0);
+    const cameraPos = camera.position.clone().setZ(0);
+    const disp = new Vector3().subVectors(spherePos, cameraPos);
+    const dist = disp.length() ** 2;
+    disp.setLength = (dist);
+    camera.position.add(disp);
+
+    camera.position.lerp(new Vector3(0, 0, camera.position.z), 0.1);
+    camera.position.z = 1 + scene.sphere.position.z;
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
 
