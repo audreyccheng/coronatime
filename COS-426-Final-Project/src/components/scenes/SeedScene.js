@@ -59,17 +59,34 @@ class SeedScene extends Scene {
         this.cylinders.shift();
     }
 
-    addViruses() {
-        this.remove(this.viruses[0]);
+    addViruses(index) {
+        this.remove(this.viruses[index]);
         this.viruses.shift();
-        for (var i = 0; i < Math.random() * 4; i++) {
+        const numViruses = 4;
+        for (var i = 0; i < Math.random() * numViruses; i++) {
             var zpos = 5;
             if (this.viruses.length > 0) {
-                zpos = this.viruses[this.viruse.length - 1].position.z - 0.5 - Math.random() * 2; 
+                zpos = this.viruses[this.viruses.length - 1].position.z - 0.5 - Math.random() * 2; 
             }
-            const newVirus = new Virus(getRandomVirusPos(zpos));
+            var newVirus = new Virus(getRandomVirusPos(zpos));
             this.viruses.push(newVirus);
             this.add(newVirus);
+        }
+    }
+
+    addRedCells(index) {
+        this.remove(this.redcells[index]);
+        this.redcells.shift();
+        const numRedCells = 4;
+        for (var i = 0; i < Math.random() * numRedCells; i++) {
+            var zpos = 5;
+            if (this.redcells.length > 0) {
+                zpos = this.redcells[this.redcells.length - 1].position.z - 0.5 - Math.random() * 2; 
+            }
+            var rotation = Math.random() * 0.1 + .15;
+            var newRedCell = new RedCell(getRandomVirusPos(zpos), rotation);
+            this.redcells.push(newRedCell);
+            this.add(newRedCell);
         }
     }
 

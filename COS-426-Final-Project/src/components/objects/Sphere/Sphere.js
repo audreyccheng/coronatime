@@ -42,6 +42,21 @@ class Sphere extends Group {
         this.netForces.multiplyScalar(0); // reset force
     	this.position.x += this.velocity.x;
     	this.position.y += this.velocity.y;
+
+    	const cynLimit = 1 - S_RADIUS/2 - 0.05;
+
+    	if (Math.sqrt(this.position.x*this.position.x + this.position.y*this.position.y) > cynLimit) {
+    		let theta = Math.atan(this.position.y/this.position.x);
+    		if (theta !== undefined) {
+    			if (this.position.x < 0) {
+    				this.position.x = -cynLimit * Math.cos(theta);
+    				this.position.y = -cynLimit * Math.sin(theta);
+    			} else {
+    				this.position.x = cynLimit * Math.cos(theta);
+    				this.position.y = cynLimit * Math.sin(theta);
+    			}
+    		}
+    	}
     }
 
 

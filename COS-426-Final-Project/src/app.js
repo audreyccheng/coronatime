@@ -9,7 +9,7 @@
 import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
-import { C_HEIGHT, V_RADIUS } from 'objects';
+import { C_HEIGHT, V_RADIUS, S_RADIUS } from 'objects';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -48,7 +48,10 @@ const onAnimationFrameHandler = (timeStamp) => {
     	scene.addCylinder();
     }
     while (scene.viruses[0] && scene.viruses[0].position.z > camera.position.z + C_HEIGHT/2) {
-    	scene.addViruses();
+    	scene.addViruses(0);
+    }
+    while (scene.redcells[0] && scene.redcells[0].position.z > camera.position.z + C_HEIGHT/2) {
+    	scene.addRedCells(0);
     }
 
     const curSpeed = 0.0675;
@@ -56,19 +59,30 @@ const onAnimationFrameHandler = (timeStamp) => {
         obj.position.z += curSpeed;
     });
 
+    const virusSpeed = 0.01;
     [...scene.viruses].forEach(obj => {
         obj.position.z += curSpeed;
-        obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0);
-        obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0);
+        obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * virusSpeed;
+        obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * virusSpeed;
     });
 
+    const redCellSpeed = 0.2;
     [...scene.redcells].forEach(obj => {
-        obj.position.z += curSpeed * (Math.random() * 2.0 - 1.0) * 0.02;
-        obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * 0.02;
-        obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * 0.02;
+        obj.position.z += curSpeed * redCellSpeed;
+        obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
+        obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
     });
 
     scene.simulate();
+
+    for (let i = 0; i < scene.viruses.length; i++) {
+    	let virus = scene.viruses[i];
+    	const S_RADIUS = 0.1;
+    	if (Math.sqrt((virus.position.x - scene.sphere.position.x) ** 2) + ((virus.position.y - scene.sphere.position.y) ** 2)
+    		+ ((virus.position.z - scene.sphere.position.z) ** 2) < S_RADIUS && virus.position.z <= scene.sphere.position.z) {
+    		scene.addViruses(i);
+    	}
+    }
 
     let spherePos = scene.sphere.position.clone().setZ(0);
     const cameraPos = camera.position.clone().setZ(0);
