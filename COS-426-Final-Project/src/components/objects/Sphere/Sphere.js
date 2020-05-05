@@ -1,4 +1,4 @@
-import { Group, Vector3 } from 'three';
+import { Group, Vector3, MeshBasicMaterial } from 'three';
 import { SphereGeometry, MeshPhongMaterial, Mesh, BackSide } from "three";
 
 const S_RADIUS = 0.1;
@@ -7,6 +7,7 @@ const S_GEOMETRY = new SphereGeometry (
     12,
     12,
 );
+const DRAG = 0.9;
 
 class Sphere extends Group {
     constructor(zBeginning) {
@@ -14,7 +15,7 @@ class Sphere extends Group {
         super();
 
         const geometry = S_GEOMETRY;
-        const material = new MeshPhongMaterial({color: 0xffffff, flatShading: true,});
+        const material = new MeshPhongMaterial({color: 0xffffff, flatShading: true, opacity: 0.7, transparent: true,});
         const mesh = new Mesh(geometry, material);
         mesh.rotation.x += Math.PI / 2;
 
@@ -32,18 +33,15 @@ class Sphere extends Group {
     }
 
     addForce(force) {
-    	netForces.add(force);
-    	velocity.add(netForces);
-    	netForces.multiplyScalar(0.8);
-    	this.position.x += velocity.x;
-    	this.position.y += velocity.y;
+    	this.netForces.add(force);
     }
 
     updatePosition() {
-    	velocity.add(netForces);
-    	netForces.multiplyScalar(0.8);
-    	this.position.x += velocity.x;
-    	this.position.y += velocity.y;
+        this.velocity.multiplyScalar(DRAG); // slow down 
+        this.velocity.add(this.netForces); // apply force
+        this.netForces.multiplyScalar(0); // reset force
+    	this.position.x += this.velocity.x;
+    	this.position.y += this.velocity.y;
     }
 
 

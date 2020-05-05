@@ -9,6 +9,7 @@
 import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
+import { C_HEIGHT, V_RADIUS } from 'objects';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -43,9 +44,31 @@ const onAnimationFrameHandler = (timeStamp) => {
     scene.update && scene.update(timeStamp);
     window.requestAnimationFrame(onAnimationFrameHandler);
 
-    while (scene.cylinders[0] && scene.cylinders[0].position.z > camera.position.z + 20/2) {
+    while (scene.cylinders[0] && scene.cylinders[0].position.z > camera.position.z + C_HEIGHT/2) {
     	scene.addCylinder();
     }
+    while (scene.viruses[0] && scene.viruses[0].position.z > camera.position.z + C_HEIGHT/2) {
+    	scene.addViruses();
+    }
+
+    const curSpeed = 0.0675;
+    [...scene.cylinders].forEach(obj => {
+        obj.position.z += curSpeed;
+    });
+
+    [...scene.viruses].forEach(obj => {
+        obj.position.z += curSpeed;
+        obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0);
+        obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0);
+    });
+
+    [...scene.redcells].forEach(obj => {
+        obj.position.z += curSpeed * (Math.random() * 2.0 - 1.0) * 0.02;
+        obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * 0.02;
+        obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * 0.02;
+    });
+
+    scene.simulate();
 
     let spherePos = scene.sphere.position.clone().setZ(0);
     const cameraPos = camera.position.clone().setZ(0);
@@ -68,3 +91,37 @@ const windowResizeHandler = () => {
 };
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
+
+window.addEventListener("keydown", handleImpactEvents, false);
+
+function handleImpactEvents(event) {
+    // Ignore keypresses typed into a text box
+    if (event.target.tagName === "INPUT") { return; }
+
+    // The vectors to which each key code in this handler maps
+    const keyMap = {
+        ArrowUp: new Vector3(0,  0.01,  0),
+        ArrowDown: new Vector3(0,  -0.01,  0),
+        ArrowLeft: new Vector3(-0.01,  0,  0),
+        ArrowRight: new Vector3(0.01,  0,  0),
+    };
+
+    // const scale = 30; // the magnitude of the offset produced by this impact
+
+    // check only for bound keys
+    if (event.key != "ArrowUp" && event.key != "ArrowDown" && event.key != "ArrowLeft"
+      && event.key != "ArrowRight" && event.key != "Enter") {
+        return;
+    }
+
+    if (event.key == "Enter") {
+        // SceneParams.GRAVITY = -1.0 * SceneParams.GRAVITY;
+        return;
+    }
+
+    // move sphere position if arrow key pressed
+    if (scene.sphere != null) {
+        scene.sphere.addForce(keyMap[event.key]);
+    }
+}
+
