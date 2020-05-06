@@ -36,6 +36,8 @@ controls.minDistance = 4;
 controls.maxDistance = 16;
 controls.update();
 
+let roundDistance = 0;
+let maxDistance = 0;
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
@@ -58,6 +60,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     [...scene.cylinders].forEach(obj => {
         obj.position.z += curSpeed;
     });
+    roundDistance += curSpeed;
 
     const virusSpeed = 0.01;
     [...scene.viruses].forEach(obj => {
