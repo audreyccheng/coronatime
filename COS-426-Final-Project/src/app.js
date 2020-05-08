@@ -81,6 +81,8 @@ const onAnimationFrameHandler = (timeStamp) => {
     	if (Math.sqrt((virus.position.x - scene.sphere.position.x) ** 2) + ((virus.position.y - scene.sphere.position.y) ** 2)
     		+ ((virus.position.z - scene.sphere.position.z) ** 2) < S_RADIUS && virus.position.z <= scene.sphere.position.z) {
     		scene.addViruses(i);
+    		scene.virusCount++;
+    		console.log(scene.virusCount);
     	}
     }
 
