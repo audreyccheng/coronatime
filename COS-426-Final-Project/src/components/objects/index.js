@@ -4,3 +4,4 @@ export * from './Cylinder';
 export * from './Sphere';
 export * from './RedCell';
 export * from './Virus';
+export * from './Score';

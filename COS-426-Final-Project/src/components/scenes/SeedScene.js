@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, Vector3, FontLoader, MeshPhongMaterial, Mesh, TextGeometry } from 'three';
-import { Cylinder, Sphere, C_HEIGHT, RedCell, V_RADIUS } from 'objects';
+import { Cylinder, Sphere, C_HEIGHT, RedCell, V_RADIUS, Score } from 'objects';
 import { BasicLights } from 'lights';
 import { Virus } from '../objects';
 
@@ -11,13 +11,13 @@ class SeedScene extends Scene {
 
         // Init state
         this.state = {
-            gui: new Dat.GUI(), // Create GUI for scene
-            rotationSpeed: 1,
-            updateList: [],
+            // gui: new Dat.GUI(), // Create GUI for scene
+            // rotationSpeed: 1,
+            // updateList: [],
         };
 
         // Set background to a nice color
-        this.background = new Color(0x7ec0ee);
+        this.background = new Color(0x0);
 
         // Add meshes to scene
         this.cylinders = [new Cylinder(0, true), new Cylinder(-1*C_HEIGHT, false), new Cylinder(-2*C_HEIGHT, true)];
@@ -37,8 +37,12 @@ class SeedScene extends Scene {
         this.virusCount = 0;
         this.add(this.lights, this.sphere);
 
+        // this.score = Score(0);
+        // this.score.updateScore(1);
+
+
         // Populate GUI
-        this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
+        // this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
     }
 
     // update(timeStamp) {
@@ -63,7 +67,6 @@ class SeedScene extends Scene {
     addViruses(index) {
         this.remove(this.viruses[index]);
         this.viruses.shift();
-
         const numViruses = 4;
         for (var i = 0; i < Math.random() * numViruses; i++) {
             var zpos = 5;
@@ -74,6 +77,11 @@ class SeedScene extends Scene {
             this.viruses.push(newVirus);
             this.add(newVirus);
         }
+    }
+
+    addVirusCount() {
+        this.virusCount++;
+        console.log(this.virusCount);
     }
 
     addRedCells(index) {

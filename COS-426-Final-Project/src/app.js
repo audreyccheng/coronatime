@@ -6,15 +6,32 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
+import { WebGLRenderer, PerspectiveCamera, Vector3, Vector2 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
 import { C_HEIGHT, V_RADIUS, S_RADIUS } from 'objects';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
+
+var renderScene = new RenderPass(scene, camera);
+var composer = new EffectComposer( renderer );
+
+var bloomStrength = 1;
+var bloomRadius = 0;
+var bloomThreshold = 0.1;
+
+var bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), bloomStrength, bloomRadius, bloomThreshold);
+
+composer.setSize(window.innerWidth, window.innerHeight);
+composer.addPass(renderScene);
+composer.addPass(bloomPass);
 
 // Set up camera
 camera.position.set(0, 0, 8);
@@ -28,20 +45,24 @@ document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
+// var btn = document.createElement("BUTTON");   // Create a <button> element
+// btn.innerHTML = "CLICK ME";                   // Insert text
+// document.body.appendChild(btn); 
+
 // Set up controls
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
-controls.enablePan = false;
-controls.minDistance = 4;
-controls.maxDistance = 16;
-controls.update();
+// const controls = new OrbitControls(camera, canvas);
+// controls.enableDamping = true;
+// controls.enablePan = false;
+// controls.minDistance = 4;
+// controls.maxDistance = 16;
+// controls.update();
 
 let roundDistance = 0;
 let maxDistance = 0;
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
-    controls.update();
+    // controls.update();
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
     window.requestAnimationFrame(onAnimationFrameHandler);
@@ -77,6 +98,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     });
 
     scene.simulate();
+    var killed = false;
 
     for (let i = 0; i < scene.viruses.length; i++) {
     	let virus = scene.viruses[i];
@@ -84,8 +106,10 @@ const onAnimationFrameHandler = (timeStamp) => {
     	if (Math.sqrt((virus.position.x - scene.sphere.position.x) ** 2) + ((virus.position.y - scene.sphere.position.y) ** 2)
     		+ ((virus.position.z - scene.sphere.position.z) ** 2) < S_RADIUS && virus.position.z <= scene.sphere.position.z) {
     		scene.addViruses(i);
-    		scene.virusCount++;
-    		console.log(scene.virusCount);
+    		if (!killed) {
+    			scene.addVirusCount();
+    			killed = true;
+    		}
     	}
     }
 
@@ -97,9 +121,12 @@ const onAnimationFrameHandler = (timeStamp) => {
     camera.position.add(disp);
 
     camera.position.lerp(new Vector3(0, 0, camera.position.z), 0.1);
-    camera.position.z = 1 + scene.sphere.position.z;
+    camera.position.z = 1.2 + scene.sphere.position.z;
+
+    composer.render();
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
+
 
 // Resize Handler
 const windowResizeHandler = () => {
@@ -143,4 +170,3 @@ function handleImpactEvents(event) {
         scene.sphere.addForce(keyMap[event.key]);
     }
 }
-
