@@ -61,6 +61,7 @@ var listener = new AudioListener();
 camera.add( listener );
 var sound = new Audio( listener );
 var audioLoader = new AudioLoader();
+var audioLoader2 = new AudioLoader();
 
 let roundDistance = 0;
 let maxDistance = 0;
@@ -73,6 +74,8 @@ let showMenu = false;
 const startmenu = document.getElementById("startmenu");
 const currentScore = document.getElementById("currentscore");
 const scoreMenu = document.getElementById("scoremenu");
+
+let soundOn = false;
 
 const startGame = event => {
     if (!showMenu) {
@@ -153,8 +156,13 @@ const onAnimationFrameHandler = (timeStamp) => {
         obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
     });
 
-    if (!showMenu) {
-        // updateScore();
+    if (showMenu) {
+        // audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
+        //     sound.setBuffer( buffer );
+        //     sound.setLoop(true);
+        //     sound.setVolume(0.5);
+        //     sound.play();
+        // });
     }
 
     currentScore.textContent = `${scene.virusCount}`;
@@ -175,6 +183,14 @@ const onAnimationFrameHandler = (timeStamp) => {
     	if (vToSphere < S_RADIUS + V_RADIUS - 0.1 &&  Math.abs(scene.sphere.position.z - virus.position.z) < 0.1) {
     		scene.addViruses(i);
     		scene.addVirusCount();
+            if (!showMenu && soundOn) {
+                audioLoader2.load( './src/squish.mp3', function( buffer ) {
+                    sound.setBuffer( buffer );
+                    sound.setLoop(false);
+                    sound.setVolume(0.4);
+                    sound.play();
+                });
+            }
     	}
     }
 
@@ -217,6 +233,24 @@ function handleImpactEvents(event) {
         ArrowRight: new Vector3(0.02,  0,  0),
     };
 
+    if (event.key == "m") {
+        soundOn = !soundOn;
+        if (showMenu && soundOn) {
+            audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
+                sound.setBuffer( buffer );
+                sound.setLoop(true);
+                sound.autoplay = true;
+                sound.setVolume(0.5);
+                sound.play();
+            });
+        }
+        if (!soundOn) {
+            if (sound.isPlaying) {
+                sound.stop();
+            }
+        }
+    }
+
 
     // space to remove start menu
     if (showMenu && event.key == " ") {
@@ -224,12 +258,9 @@ function handleImpactEvents(event) {
         showMenu = false;
         scene.virusCount = 0;
         scoremenu.classList.add("started");
-        audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
-            sound.setBuffer( buffer );
-            sound.setLoop(true);
-            sound.setVolume(0.5);
-            sound.play();
-        });
+        if (sound.isPlaying) {
+            sound.stop();
+        }
         return;
     }
 
