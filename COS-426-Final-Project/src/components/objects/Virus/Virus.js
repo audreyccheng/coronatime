@@ -1,5 +1,5 @@
 import { Group, ConeGeometry } from 'three';
-import { SphereGeometry, MeshPhongMaterial, Mesh, BackSide } from "three";
+import { SphereGeometry, MeshPhongMaterial, Mesh, Vector3 } from "three";
 
 const V_RADIUS = 0.06;
 const S_SEGMENTS = 20; 
@@ -32,23 +32,29 @@ class Virus extends Group {
 
         const body_geometry = V_GEOMETRY;
         const body = new Mesh(body_geometry, material);
-        //body.position.set(this.position.x, this.position.y, this.position.z);
-
         
+        // randomly & uniformly sample from surface of sphere to get position of spikes 
+        const N = 6;
         const cone_geometry = C_GEOMETRY;
         var spikes = [];
-        var s = new Mesh(cone_geometry, material);
-        //s.position.y = -0.5 * V_RADIUS;
-        spikes.push(s);
-        for (var i = 0; i < 30; i++) {
-            var xrot = 2 * Math.PI * Math.random();
-            var zrot = 2 * Math.PI * Math.random();
-            var spike = new Mesh(cone_geometry, material);
-            spike.rotateX(xrot);
-            spike.rotateZ(zrot);
-            spikes.push(spike);
+        for (var i = 0; i < N; i++) {
+            for (var j = 0; j < N; j++) {
+                var theta = (i / N + Math.random() * 1/N) * 2 * Math.PI;
+                var u = (j / N + Math.random() * 1/N) * 2 - 1;
+                var x = Math.sqrt(1 - u*u) * Math.cos(theta);
+                var y = Math.sqrt(1 - u*u) * Math.sin(theta);
+                var z = u;
+                var sample = new Vector3(x, y, z);
+                var normal = new Vector3(0,1,0);
+                normal.cross(sample);
+                
+                var spike = new Mesh(cone_geometry, material);
+                spike.setRotationFromAxisAngle(normal, sample.angleTo(new Vector3(0,1,0)) + Math.PI);
+                spike.rotateX(Math.PI);
+                
+                spikes.push(spike);
+            }
         } 
-        
         
         this.name = 'redcell';
         this.add(body);

@@ -1,0 +1,220 @@
+import { Group, Curve } from 'three';
+import { TubeBufferGeometry, MeshPhongMaterial, Mesh, BackSide, Vector3 } from 'three';
+import { Clot } from 'objects';
+
+const CURVED_SCALE = 3.2;
+const CURVE_HEIGHT = Math.random() * 2.0 + 1;
+const STRAIGHT_HEIGHT = Math.random() * 10.0 + 19;
+
+const TUBE_SEGMENTS = 40;
+const RAD_SEGMENTS = 50;  
+const T_RADIUS = 1;  
+const CLOSED = false;
+
+class RightCurve extends Curve {
+    constructor(scale, curveHeight) {
+        super();
+        this.scale = scale;
+        this.curveHeight = curveHeight;
+    }
+    getPoint(t) {
+        var d;
+        var tx;
+        var ty;
+        var tz;
+
+        if (t < 0.5) { // top half-circle
+            d = 2 * Math.PI * (0.5 - t); // d goes from pi to 0 as t goes from 0 to 0.5
+            tx = Math.cos(d) + 1;
+            ty = 0;
+            tz = -1.0 * this.curveHeight * Math.sin(d);
+        } else { // bottom half-circle
+            d = 2 * Math.PI * t; // d goes from pi to 2pi as t goes from 0.5 to 1
+            tx = Math.cos(d) + 3;
+            ty = 0;
+            tz = -1.0 * this.curveHeight * Math.sin(d);
+        }
+
+        return new Vector3(tx, ty, tz).multiplyScalar(this.scale);
+    }
+}
+
+class LeftCurve extends Curve {
+    constructor(scale, curveHeight) {
+        super();
+        this.scale = scale;
+        this.curveHeight = curveHeight;
+    }
+    getPoint(t) {
+        var d;
+        var tx;
+        var ty;
+        var tz;
+
+        if (t < 0.5) { // top half-circle
+            d = 2 * Math.PI * t; // d goes from 0 to pi as t goes from 0 to 0.5
+            tx = Math.cos(d) - 1;
+            ty = 0;
+            tz = -1.0 * this.curveHeight * Math.sin(d);
+        } else { // bottom half-circle
+            d = 2 * Math.PI * (1.5 - t); // d goes from 2pi to pi as t goes from 0.5 to 1
+            tx = Math.cos(d) - 3;
+            ty = 0;
+            tz = -1.0 * this.curveHeight * Math.sin(d);
+        }
+
+        return new Vector3(tx, ty, tz).multiplyScalar(this.scale);
+    }
+}
+
+class StraightCurve extends Curve {
+    constructor(scale) {
+        super();
+        this.scale = scale;
+    }
+    getPoint(t) {
+        var tx = 0;
+        var ty = 0;
+        var tz = -1.0 * t;
+        return new Vector3(tx, ty, tz).multiplyScalar(this.scale);
+    }
+}
+
+class Tube extends Group {
+    constructor(startPos) {
+        // Call parent Group() constructor
+        super();
+        
+        var material = new MeshPhongMaterial({color: 0x330c0c, flatShading: true,});
+        material.side = BackSide;
+
+        //------------------------------------------------------------------------------------------------
+        var path = new RightCurve(CURVED_SCALE, 2.0);
+        this.left = [false];
+        var geometry = new TubeBufferGeometry(path, TUBE_SEGMENTS, T_RADIUS, RAD_SEGMENTS, CLOSED);
+        this.meshes = [new Mesh(geometry, material)];
+        this.curves = [path];
+        this.rotations = [0];
+        this.clots = [];
+        this.nclots = [0];
+
+        this.tSwitch = false;
+        for (var i = 0; i < 2; i++) {
+            var nPath;
+            if (this.tSwitch) {
+                if (Math.random() < 0.5) {
+                    nPath = new LeftCurve(CURVED_SCALE, CURVE_HEIGHT);
+                    this.left.push(true);
+                } else {
+                    nPath = new RightCurve(CURVED_SCALE, CURVE_HEIGHT);
+                    this.left.push(false);
+                }
+            } else {
+                nPath = new StraightCurve(STRAIGHT_HEIGHT);
+                this.left.push(false);
+            }
+
+            const geo = new TubeBufferGeometry(nPath, TUBE_SEGMENTS, T_RADIUS, RAD_SEGMENTS, CLOSED);
+            this.meshes.push(new Mesh(geo, material));
+            
+            var tangent1 = this.curves[this.curves.length - 1].getTangent(1); // tangent at the end of previous mesh's curve
+            tangent1.applyAxisAngle(new Vector3(0,1,0), this.rotations[this.rotations.length - 1]); // tangent at the end of previous mesh
+            var tangent2 = nPath.getTangent(0); // tangent at beginning of this mesh's curve
+            var angle = tangent2.angleTo(tangent1); // angle between previous mesh' and current mesh's tangents
+            this.meshes[this.meshes.length - 1].rotateY(-1.0 * angle); // rotate this mesh to align its tangent with previous mesh's
+            
+            var end = this.curves[this.curves.length - 1].getPoint(1); 
+            end.applyAxisAngle(new Vector3(0,1,0), this.rotations[this.rotations.length - 1]);
+            end.add(this.meshes[this.meshes.length - 2].position); // end point of previous mesh
+            this.meshes[this.meshes.length - 1].position.x = end.x; // move current mesh to start at end of previous
+            this.meshes[this.meshes.length - 1].position.y = end.y;
+            this.meshes[this.meshes.length - 1].position.z = end.z;
+
+            // add blood clot obstacles
+            var numClots = Math.ceil(Math.random() * 3 + 1);
+            this.nclots.push(numClots);
+            for (var i = 0; i < numClots; i++) {
+                var cpos = nPath.getPoint(Math.random());
+                cpos.applyAxisAngle(new Vector3(0,1,0), -1.0 * angle);
+                cpos.add(end);
+                var bclot = new Clot(cpos);
+                this.clots.push(bclot);
+            }
+
+            this.curves.push(nPath);
+            this.rotations.push(-1.0 * angle);
+            this.tSwitch = !this.tSwitch;
+        }
+
+        this.position.x += startPos.x;
+        this.position.z += startPos.z;
+        this.name = 'tube';
+        this.meshes.forEach(obj => this.add(obj));
+        this.clots.forEach(obj => this.add(obj));
+    }
+
+    addTube() {
+        //this.remove(this.meshes[0]);
+        this.curves.shift();
+        this.meshes.shift();
+        this.rotations.shift();
+        this.left.shift();
+        for (var i = 0; i < this.nclots[0]; i++) {
+            this.remove(this.clots[0]);
+            this.clots.shift();
+        }
+        this.nclots.shift();
+
+        var material = new MeshPhongMaterial({color: 0x330c0c, flatShading: true,});
+        material.side = BackSide;
+
+        var nPath;
+        if (this.tSwitch) {
+            if (Math.random() < 0.5) {
+                nPath = new LeftCurve(CURVED_SCALE, CURVE_HEIGHT);
+                this.left.push(true);
+            } else {
+                nPath = new RightCurve(CURVED_SCALE, CURVE_HEIGHT);
+                this.left.push(false);
+            }
+        } else {
+            nPath = new StraightCurve(STRAIGHT_HEIGHT);
+            this.left.push(false);
+        }
+
+        const geo = new TubeBufferGeometry(nPath, TUBE_SEGMENTS, T_RADIUS, RAD_SEGMENTS, CLOSED);
+        this.meshes.push(new Mesh(geo, material));
+        
+        var tangent1 = this.curves[this.curves.length - 1].getTangent(1); // tangent at the end of previous mesh's curve
+        tangent1.applyAxisAngle(new Vector3(0,1,0), this.rotations[this.rotations.length - 1]); // tangent at the end of previous mesh
+        var tangent2 = nPath.getTangent(0); // tangent at beginning of this mesh's curve
+        var angle = tangent2.angleTo(tangent1); // angle between previous mesh' and current mesh's tangents
+        this.meshes[this.meshes.length - 1].rotateY(-1.0 * angle); // rotate this mesh to align its tangent with previous mesh's
+        
+        var end = this.curves[this.curves.length - 1].getPoint(1); 
+        end.applyAxisAngle(new Vector3(0,1,0), this.rotations[this.rotations.length - 1]);
+        end.add(this.meshes[this.meshes.length - 2].position); // end point of previous mesh
+        this.meshes[this.meshes.length - 1].position.x = end.x; // move current mesh to start at end of previous
+        this.meshes[this.meshes.length - 1].position.y = end.y;
+        this.meshes[this.meshes.length - 1].position.z = end.z;
+
+        this.curves.push(nPath);
+        this.rotations.push(-1.0 * angle);
+        this.tSwitch = !this.tSwitch;
+        this.add(this.meshes[this.meshes.length - 1]);
+
+        // add blood clot obstacles
+        var numClots = Math.ceil(Math.random() * 3 + 1);
+        this.nclots.push(numClots);
+        for (var i = 0; i < numClots; i++) {
+            var cpos = nPath.getPoint(Math.random());
+            //cpos.applyAxisAngle(new Vector3(0,1,0), -1.0 * angle);
+            cpos.add(end);
+            var bclot = new Clot(cpos);
+            this.clots.push(bclot);
+            this.add(bclot);
+        }
+    }
+}
+
+export default Tube;
