@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, Vector3, FontLoader, MeshPhongMaterial, Mesh, TextGeometry } from 'three';
-import { Cylinder, Sphere, C_HEIGHT, RedCell, V_RADIUS, Score } from 'objects';
+import { Cylinder, Sphere, C_HEIGHT, RedCell, V_RADIUS } from 'objects';
 import { BasicLights } from 'lights';
 import { Virus } from '../objects';
 
@@ -37,10 +37,6 @@ class SeedScene extends Scene {
         this.virusCount = 0;
         this.add(this.lights, this.sphere);
 
-        // this.score = Score(0);
-        // this.score.updateScore(1);
-
-
         // Populate GUI
         // this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
     }
@@ -66,7 +62,7 @@ class SeedScene extends Scene {
 
     addViruses(index) {
         this.remove(this.viruses[index]);
-        this.viruses.shift();
+        this.viruses.splice(index, 1);
         const numViruses = 4;
         for (var i = 0; i < Math.random() * numViruses; i++) {
             var zpos = 5;
@@ -81,7 +77,6 @@ class SeedScene extends Scene {
 
     addVirusCount() {
         this.virusCount++;
-        console.log(this.virusCount);
     }
 
     addRedCells(index) {

@@ -6,14 +6,14 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, Vector3, Vector2 } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { SeedScene } from 'scenes';
-import { C_HEIGHT, V_RADIUS, S_RADIUS } from 'objects';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { WebGLRenderer, PerspectiveCamera, Vector3, Vector2 } from '../node_modules/three/src/Three.js';
+import { OrbitControls } from '../node_modules/three/examples/jsm/controls/OrbitControls.js';
+import { SeedScene } from './components/scenes';
+import { C_HEIGHT, V_RADIUS, S_RADIUS } from './components/objects';
+import { EffectComposer } from '../node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from '../node_modules/three/examples/jsm/postprocessing/RenderPass.js';
+import { GlitchPass } from '../node_modules/three/examples/jsm/postprocessing/GlitchPass.js';
+import { UnrealBloomPass } from '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -60,6 +60,25 @@ document.body.appendChild(canvas);
 let roundDistance = 0;
 let maxDistance = 0;
 
+let showMenu = false;
+const startmenu = document.getElementById("startmenu");
+const currentScore = document.getElementById("currentscore");
+const scoreMenu = document.getElementById("scoremenu");
+
+const startGame = event => {
+    if (!showMenu) {
+        startmenu.classList.add("started");
+        scoremenu.classList.remove("started");
+        showMenu = true;
+
+    } else {
+        startmenu.classList.remove("started");
+        scoremenu.classList.add("started");
+        showMenu = false;
+    }
+};
+
+startGame();
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
     // controls.update();
@@ -97,19 +116,21 @@ const onAnimationFrameHandler = (timeStamp) => {
         obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
     });
 
+    if (!showMenu) {
+        // updateScore();
+    }
+
+    currentScore.textContent = `${scene.virusCount}`;
+
     scene.simulate();
-    var killed = false;
 
     for (let i = 0; i < scene.viruses.length; i++) {
     	let virus = scene.viruses[i];
     	const S_RADIUS = 0.1;
     	if (Math.sqrt((virus.position.x - scene.sphere.position.x) ** 2) + ((virus.position.y - scene.sphere.position.y) ** 2)
-    		+ ((virus.position.z - scene.sphere.position.z) ** 2) < S_RADIUS && virus.position.z <= scene.sphere.position.z) {
+    		+ ((virus.position.z - scene.sphere.position.z) ** 2) < S_RADIUS) { //&& virus.position.z <= scene.sphere.position.z
     		scene.addViruses(i);
-    		if (!killed) {
-    			scene.addVirusCount();
-    			killed = true;
-    		}
+    		scene.addVirusCount();
     	}
     }
 
@@ -151,6 +172,21 @@ function handleImpactEvents(event) {
         ArrowLeft: new Vector3(-0.01,  0,  0),
         ArrowRight: new Vector3(0.01,  0,  0),
     };
+
+
+    // space to remove start menu
+    if (showMenu && event.key == " ") {
+        startmenu.classList.remove("started");
+        showMenu = false;
+        scene.virusCount = 0;
+        scoremenu.classList.add("started");
+        return;
+    }
+
+    // ignore other key presses if game hasn't started
+    if (showMenu) {
+        return;
+    }
 
     // const scale = 30; // the magnitude of the offset produced by this impact
 
