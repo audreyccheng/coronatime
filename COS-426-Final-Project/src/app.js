@@ -61,6 +61,7 @@ var listener = new AudioListener();
 camera.add( listener );
 var sound = new Audio( listener );
 var audioLoader = new AudioLoader();
+var audioLoader2 = new AudioLoader();
 
 let roundDistance = 0;
 let maxDistance = 0;
@@ -81,6 +82,13 @@ const startGame = event => {
         scoremenu.classList.add("started");
         showMenu = false;
     }
+    audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
+            sound.setBuffer( buffer );
+            sound.setLoop(true);
+            sound.autoplay = true;
+            sound.setVolume(0.5);
+            sound.play();
+        });
 };
 
 startGame();
@@ -121,8 +129,13 @@ const onAnimationFrameHandler = (timeStamp) => {
         obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
     });
 
-    if (!showMenu) {
-        // updateScore();
+    if (showMenu) {
+        // audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
+        //     sound.setBuffer( buffer );
+        //     sound.setLoop(true);
+        //     sound.setVolume(0.5);
+        //     sound.play();
+        // });
     }
 
     currentScore.textContent = `${scene.virusCount}`;
@@ -136,6 +149,14 @@ const onAnimationFrameHandler = (timeStamp) => {
     		+ ((virus.position.z - scene.sphere.position.z) ** 2) < S_RADIUS) { //&& virus.position.z <= scene.sphere.position.z
     		scene.addViruses(i);
     		scene.addVirusCount();
+            if (!showMenu) {
+                audioLoader2.load( './src/squish.mp3', function( buffer ) {
+                    sound.setBuffer( buffer );
+                    sound.setLoop(false);
+                    sound.setVolume(0.4);
+                    sound.play();
+                });
+            }
     	}
     }
 
@@ -185,12 +206,9 @@ function handleImpactEvents(event) {
         showMenu = false;
         scene.virusCount = 0;
         scoremenu.classList.add("started");
-        audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
-            sound.setBuffer( buffer );
-            sound.setLoop(true);
-            sound.setVolume(0.5);
-            sound.play();
-        });
+        if (sound.isPlaying) {
+        sound.stop();
+    }
         return;
     }
 
