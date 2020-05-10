@@ -6,7 +6,7 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, Vector3, Vector2 } from '../node_modules/three/src/Three.js';
+import { WebGLRenderer, PerspectiveCamera, Vector3, Vector2, AudioListener, Audio, AudioLoader } from '../node_modules/three/src/Three.js';
 import { OrbitControls } from '../node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from './components/scenes';
 import { C_HEIGHT, V_RADIUS, S_RADIUS } from './components/objects';
@@ -56,6 +56,11 @@ document.body.appendChild(canvas);
 // controls.minDistance = 4;
 // controls.maxDistance = 16;
 // controls.update();
+
+var listener = new AudioListener();
+camera.add( listener );
+var sound = new Audio( listener );
+var audioLoader = new AudioLoader();
 
 let roundDistance = 0;
 let maxDistance = 0;
@@ -180,6 +185,12 @@ function handleImpactEvents(event) {
         showMenu = false;
         scene.virusCount = 0;
         scoremenu.classList.add("started");
+        audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
+            sound.setBuffer( buffer );
+            sound.setLoop(true);
+            sound.setVolume(0.5);
+            sound.play();
+        });
         return;
     }
 

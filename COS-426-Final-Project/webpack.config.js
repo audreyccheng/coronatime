@@ -41,6 +41,11 @@ module.exports = {
             },
         ],
     },
+    node:
+    {
+        "child_process": "empty",
+        fs: 'empty',
+    },
     resolve: {
         alias: {
             lights$: path.resolve(__dirname, 'src/components/lights'),
