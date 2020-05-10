@@ -71,6 +71,8 @@ const startmenu = document.getElementById("startmenu");
 const currentScore = document.getElementById("currentscore");
 const scoreMenu = document.getElementById("scoremenu");
 
+let soundOn = false;
+
 const startGame = event => {
     if (!showMenu) {
         startmenu.classList.add("started");
@@ -82,13 +84,6 @@ const startGame = event => {
         scoremenu.classList.add("started");
         showMenu = false;
     }
-    audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
-            sound.setBuffer( buffer );
-            sound.setLoop(true);
-            sound.autoplay = true;
-            sound.setVolume(0.5);
-            sound.play();
-        });
 };
 
 startGame();
@@ -149,7 +144,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     		+ ((virus.position.z - scene.sphere.position.z) ** 2) < S_RADIUS) { //&& virus.position.z <= scene.sphere.position.z
     		scene.addViruses(i);
     		scene.addVirusCount();
-            if (!showMenu) {
+            if (!showMenu && soundOn) {
                 audioLoader2.load( './src/squish.mp3', function( buffer ) {
                     sound.setBuffer( buffer );
                     sound.setLoop(false);
@@ -199,6 +194,24 @@ function handleImpactEvents(event) {
         ArrowRight: new Vector3(0.01,  0,  0),
     };
 
+    if (event.key == "m") {
+        soundOn = !soundOn;
+        if (showMenu && soundOn) {
+            audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
+                sound.setBuffer( buffer );
+                sound.setLoop(true);
+                sound.autoplay = true;
+                sound.setVolume(0.5);
+                sound.play();
+            });
+        }
+        if (!soundOn) {
+            if (sound.isPlaying) {
+                sound.stop();
+            }
+        }
+    }
+
 
     // space to remove start menu
     if (showMenu && event.key == " ") {
@@ -207,8 +220,8 @@ function handleImpactEvents(event) {
         scene.virusCount = 0;
         scoremenu.classList.add("started");
         if (sound.isPlaying) {
-        sound.stop();
-    }
+            sound.stop();
+        }
         return;
     }
 
