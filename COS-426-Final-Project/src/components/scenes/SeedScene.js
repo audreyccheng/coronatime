@@ -1,8 +1,7 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, Vector3, FontLoader, MeshPhongMaterial, Mesh, TextGeometry } from 'three';
-import { Cylinder, Sphere, C_HEIGHT, RedCell, V_RADIUS } from 'objects';
+import { Sphere, RedCell, V_RADIUS, Tube, Virus } from 'objects';
 import { BasicLights } from 'lights';
-import { Virus } from '../objects';
 
 class SeedScene extends Scene {
     constructor() {
@@ -20,22 +19,21 @@ class SeedScene extends Scene {
         this.background = new Color(0x0);
 
         // Add meshes to scene
-        this.cylinders = [new Cylinder(0, true), new Cylinder(-1*C_HEIGHT, false), new Cylinder(-2*C_HEIGHT, true)];
-        this.cylinderSwitch = false;
-        this.sphere = new Sphere(8);
+        this.tube = new Tube(new Vector3(0,0,7));
+        this.sphere = new Sphere(7);
         this.lights = new BasicLights();
         this.viruses = [new Virus(getRandomVirusPos(6))];
-        this.redcells = [new RedCell(new Vector3(0.4,0.3,6), 0.2), 
-            new RedCell(new Vector3(0.5,0.6,5.8), 0.25), 
-            new RedCell(new Vector3(0.2,0.7,6.3), 0.16),
-            new RedCell(new Vector3(-0.5,-0.5,6.5), 0.19),
-            new RedCell(new Vector3(-0.6,0.6,5.6), 0.23),
+        this.redcells = [new RedCell(new Vector3(0.4,0.3,-3), 0.2), 
+            new RedCell(new Vector3(0.5,0.6,-2.8), 0.25), 
+            new RedCell(new Vector3(0.2,0.7,-3.3), 0.16),
+            new RedCell(new Vector3(-0.5,-0.5,6-3.5), 0.19),
+            new RedCell(new Vector3(-0.6,0.6,-2.6), 0.23),
         ]
-        this.cylinders.forEach(obj => this.add(obj));
+        this.add(this.tube);
         this.redcells.forEach(obj => this.add(obj));
         this.viruses.forEach(obj => this.add(obj));
-        this.virusCount = 0;
         this.add(this.lights, this.sphere);
+
 
         // Populate GUI
         // this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
@@ -51,14 +49,14 @@ class SeedScene extends Scene {
     //     // }
     // }
 
-    addCylinder() {
-        const newCylinder = new Cylinder(this.cylinders[this.cylinders.length - 1].position.z - C_HEIGHT, this.cylinderSwitch);
-        this.cylinderSwitch = !this.cylinderSwitch;
-        this.cylinders.push(newCylinder);
-        this.add(newCylinder);
-        this.remove(this.cylinders[0]);
-        this.cylinders.shift();
-    }
+    // addCylinder() {
+    //     const newCylinder = new Cylinder(this.cylinders[this.cylinders.length - 1].position.z - C_HEIGHT, this.cylinderSwitch);
+    //     this.cylinderSwitch = !this.cylinderSwitch;
+    //     this.cylinders.push(newCylinder);
+    //     this.add(newCylinder);
+    //     this.remove(this.cylinders[0]);
+    //     this.cylinders.shift();
+    // }
 
     addViruses(index) {
         this.remove(this.viruses[index]);

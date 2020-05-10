@@ -65,6 +65,10 @@ var audioLoader = new AudioLoader();
 let roundDistance = 0;
 let maxDistance = 0;
 
+let tubeRemove = -1;
+let curTubeDist = 0;
+let prevAngle = 0;
+
 let showMenu = false;
 const startmenu = document.getElementById("startmenu");
 const currentScore = document.getElementById("currentscore");
@@ -91,9 +95,11 @@ const onAnimationFrameHandler = (timeStamp) => {
     scene.update && scene.update(timeStamp);
     window.requestAnimationFrame(onAnimationFrameHandler);
 
-    while (scene.cylinders[0] && scene.cylinders[0].position.z > camera.position.z + C_HEIGHT/2) {
-    	scene.addCylinder();
+    if (curTubeDist >=1 && tubeRemove !== -1) {
+        scene.tube.remove(tubeRemove);
+        tubeRemove = -1;
     }
+
     while (scene.viruses[0] && scene.viruses[0].position.z > camera.position.z + C_HEIGHT/2) {
     	scene.addViruses(0);
     }
@@ -101,10 +107,36 @@ const onAnimationFrameHandler = (timeStamp) => {
     	scene.addRedCells(0);
     }
 
-    const curSpeed = 0.0675;
-    [...scene.cylinders].forEach(obj => {
-        obj.position.z += curSpeed;
+    const curSpeed = 0.1;
+    const curve = scene.tube.curves[0];
+    const length = curve.getLength();
+
+    const curPoint = curve.getPoint(curTubeDist/length);
+    const nextPoint = curve.getPoint(Math.min((curTubeDist + curSpeed)/length, 1));
+    var vecMove = new Vector3();
+    vecMove.subVectors(curPoint, nextPoint);
+    vecMove.applyAxisAngle(new Vector3(0,1,0), scene.tube.rotations[0]);
+    var tangent = curve.getTangent(Math.min((curTubeDist + curSpeed/2)/length, 1));
+    var angle = tangent.angleTo(new Vector3(0,0,-1));
+    curTubeDist += curSpeed;
+    if (scene.tube.left[0]) {
+        scene.tube.rotateY(prevAngle - angle);
+    } else {
+        scene.tube.rotateY(angle - prevAngle);
+    }
+    prevAngle = angle;
+
+    [...scene.tube.meshes].forEach(obj => {
+        obj.position.x += vecMove.x;
+        obj.position.y += vecMove.y;
+        obj.position.z += vecMove.z;
     });
+    [...scene.tube.clots].forEach(obj => {
+        obj.position.x += vecMove.x;
+        obj.position.y += vecMove.y;
+        obj.position.z += vecMove.z;
+    });
+
     roundDistance += curSpeed;
 
     const virusSpeed = 0.01;
@@ -129,11 +161,18 @@ const onAnimationFrameHandler = (timeStamp) => {
 
     scene.simulate();
 
+    if (curTubeDist >= length) {
+        curTubeDist = 0;
+        prevAngle = 0;
+        tubeRemove = scene.tube.meshes[0];
+        scene.tube.addTube();
+    }
+
     for (let i = 0; i < scene.viruses.length; i++) {
     	let virus = scene.viruses[i];
     	const S_RADIUS = 0.1;
-    	if (Math.sqrt((virus.position.x - scene.sphere.position.x) ** 2) + ((virus.position.y - scene.sphere.position.y) ** 2)
-    		+ ((virus.position.z - scene.sphere.position.z) ** 2) < S_RADIUS) { //&& virus.position.z <= scene.sphere.position.z
+        var vToSphere = Math.sqrt((virus.position.x - scene.sphere.position.x) ** 2) + ((virus.position.y - scene.sphere.position.y) ** 2) + ((virus.position.z - scene.sphere.position.z) ** 2);
+    	if (vToSphere < S_RADIUS + V_RADIUS - 0.1 &&  Math.abs(scene.sphere.position.z - virus.position.z) < 0.1) {
     		scene.addViruses(i);
     		scene.addVirusCount();
     	}
@@ -172,10 +211,10 @@ function handleImpactEvents(event) {
 
     // The vectors to which each key code in this handler maps
     const keyMap = {
-        ArrowUp: new Vector3(0,  0.01,  0),
-        ArrowDown: new Vector3(0,  -0.01,  0),
-        ArrowLeft: new Vector3(-0.01,  0,  0),
-        ArrowRight: new Vector3(0.01,  0,  0),
+        ArrowUp: new Vector3(0,  0.02,  0),
+        ArrowDown: new Vector3(0,  -0.02,  0),
+        ArrowLeft: new Vector3(-0.02,  0,  0),
+        ArrowRight: new Vector3(0.02,  0,  0),
     };
 
 
