@@ -28,7 +28,7 @@ class Virus extends Group {
         this.position.y = pos.y;
         this.position.z = pos.z;
 
-        const material = new MeshPhongMaterial({color: 0x1bb52b, flatShading: true,});
+        const material = new MeshPhongMaterial({color: 0x1bb52b, flatShading: false,});
 
         const body_geometry = V_GEOMETRY;
         const body = new Mesh(body_geometry, material);

@@ -14,6 +14,7 @@ import { EffectComposer } from '../node_modules/three/examples/jsm/postprocessin
 import { RenderPass } from '../node_modules/three/examples/jsm/postprocessing/RenderPass.js';
 import { GlitchPass } from '../node_modules/three/examples/jsm/postprocessing/GlitchPass.js';
 import { UnrealBloomPass } from '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { Color } from 'three/build/three.module';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -23,11 +24,14 @@ const renderer = new WebGLRenderer({ antialias: true });
 var renderScene = new RenderPass(scene, camera);
 var composer = new EffectComposer( renderer );
 
-var bloomStrength = 1;
-var bloomRadius = 0;
-var bloomThreshold = 0.1;
+var bloomStrength = 0.7;
+var bloomRadius = 0.5;
+var bloomThreshold = 0.08;
 
 var bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), bloomStrength, bloomRadius, bloomThreshold);
+bloomPass.radius = 0.5;
+bloomPass.clearColor = new Color(0xffffff);
+
 
 composer.setSize(window.innerWidth, window.innerHeight);
 composer.addPass(renderScene);

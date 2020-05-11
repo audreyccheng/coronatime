@@ -1,11 +1,11 @@
-import { Group, Vector3, MeshBasicMaterial } from 'three';
+import { Group, Vector3, PointsMaterial, Points } from 'three';
 import { SphereGeometry, MeshPhongMaterial, Mesh, LineBasicMaterial, LineSegments, EdgesGeometry } from "three";
 
 const S_RADIUS = 0.1;
 const S_GEOMETRY = new SphereGeometry (
     S_RADIUS, // radius
-    12,
-    8,
+    15,
+    20,
 );
 const DRAG = 0.9;
 
@@ -15,11 +15,16 @@ class Sphere extends Group {
         super();
 
         const geometry = S_GEOMETRY;
-        var geo = new EdgesGeometry( geometry );
-        const material = new LineBasicMaterial({color: 0xffffff, linewidth: 0 } );//flatShading: true, opacity: 0.7, transparent: true,});
-        const mesh = new LineSegments(geo, material); //new Mesh(geometry, material);
+        // var geo = new EdgesGeometry( geometry );
+        // const material = new LineBasicMaterial({color: 0xffffff, linewidth: 0 } );
+        // const mesh = new LineSegments(geo, material); 
+        // const material = new MeshPhongMaterial({flatShading: false, opacity: 0.7, transparent: true,});
+        const material = new PointsMaterial({ color: 0xFFFFFF, size: 0.005 })
+        const mesh = new Points(geometry, material);//Mesh(geometry, material);
 
-        mesh.rotation.x += Math.PI / 2;
+        mesh.rotation.x += Math.PI / 3;
+        mesh.rotation.y += Math.PI / 3;
+        mesh.rotation.z += Math.PI / 3;
 
         // Init state
         this.state = {

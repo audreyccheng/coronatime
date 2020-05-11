@@ -19,7 +19,7 @@ class RedCell extends Group {
         super();
 
         const geometry = RC_GEOMETRY;
-        const material = new MeshPhongMaterial({color: 0x340c0c, flatShading: true,});
+        const material = new MeshPhongMaterial({color: 0x340c0c, flatShading: false,});
         const mesh = new Mesh(geometry, material);
         mesh.rotation.x += 2 * Math.PI * rot;
 
