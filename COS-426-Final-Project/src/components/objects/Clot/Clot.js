@@ -13,7 +13,7 @@ class Clot extends Group {
         texture.wrapT = RepeatWrapping;
         material.map = texture;
 
-        const radius = Math.random()* 0.2 + 0.2;
+        const radius = Math.random()* 0.2 + 0.01;
         const tubeRadius =  radius;  
         const radialSegments = 20;  
         const tubularSegments =  60;  
