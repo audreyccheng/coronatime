@@ -6,8 +6,8 @@ const CURVED_SCALE = 3.2;
 const CURVE_HEIGHT = Math.random() * 2.0 + 1;
 const STRAIGHT_HEIGHT = Math.random() * 10.0 + 19;
 
-const TUBE_SEGMENTS = 40;
-const RAD_SEGMENTS = 50;  
+const TUBE_SEGMENTS = 50;
+const RAD_SEGMENTS = 60;  
 const T_RADIUS = 1;  
 const CLOSED = false;
 

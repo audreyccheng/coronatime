@@ -1,5 +1,5 @@
 import { Group, Vector3, SphereGeometry, Mesh, MeshPhongMaterial, TextureLoader,TorusKnotBufferGeometry,RepeatWrapping, Euler } from 'three';
-import TEXTURE from '../../textures/rbcs.jpg'
+import TEXTURE from '../../textures/red-blood-cells.jpg'
 //Blood-clot-texture.jpg'
 
 class Clot extends Group {
@@ -7,7 +7,7 @@ class Clot extends Group {
         // Call parent Group() constructor
         super();
 
-        const material = new MeshPhongMaterial({color: 0x300c0c, flatShading: true,})
+        const material = new MeshPhongMaterial({color: 0x300c0c, flatShading: false,})
         var texture = new TextureLoader().load(TEXTURE);
         texture.wrapS = RepeatWrapping;
         texture.wrapT = RepeatWrapping;
@@ -16,7 +16,7 @@ class Clot extends Group {
         const radius = Math.random()* 0.2 + 0.2;
         const tubeRadius =  radius;  
         const radialSegments = 20;  
-        const tubularSegments =  60;  
+        const tubularSegments =  30;  
         const p =  1; 
         const q =  3;  
         const geometry = new TorusKnotBufferGeometry(radius, tubeRadius, tubularSegments, radialSegments, p, q);
