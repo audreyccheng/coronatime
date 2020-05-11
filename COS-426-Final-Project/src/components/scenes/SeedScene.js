@@ -38,48 +38,14 @@ class SeedScene extends Scene {
         // this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
     }
 
-    // update(timeStamp) {
-    //     const { rotationSpeed, updateList } = this.state;
-    //     //this.rotation.y = (rotationSpeed * timeStamp) / 10000;
-
-    //     // Call update for each object in the updateList
-    //     // for (const obj of updateList) {
-    //     //     obj.update(timeStamp);
-    //     // }
-    // }
-
     addVirusCount() {
         this.virusCount++;
     }
-
-    // addRedCells(index) {
-    //     this.remove(this.redcells[index]);
-    //     this.redcells.shift();
-    //     const numRedCells = 4;
-    //     for (var i = 0; i < Math.random() * numRedCells; i++) {
-    //         var zpos = 5;
-    //         if (this.redcells.length > 0) {
-    //             zpos = this.redcells[this.redcells.length - 1].position.z - 0.5 - Math.random() * 2; 
-    //         }
-    //         var rotation = Math.random() * 0.1 + .15;
-    //         var newRedCell = new RedCell(getRandomVirusPos(zpos), rotation);
-    //         this.redcells.push(newRedCell);
-    //         this.add(newRedCell);
-    //     }
-    // }
 
     simulate() {
         this.sphere.updatePosition();
     }
 }
-
-// function getRandomVirusPos(zpos) {
-//     const vbounds = 1.0 - V_RADIUS/2 - 0.08;
-//     var dist = Math.random() * vbounds;
-//     var theta = Math.random() * 2.0 * Math.PI;
-//     var position = new Vector3(dist*Math.cos(theta), dist*Math.sin(theta), zpos);
-//     return position;
-// }
 
 export default SeedScene;
 

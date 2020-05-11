@@ -52,7 +52,7 @@ class Sphere extends Group {
     	this.position.x += this.velocity.x;
     	this.position.y += this.velocity.y;
 
-    	const cynLimit = 1 - S_RADIUS/2 - 0.05;
+    	const cynLimit = 1 - S_RADIUS/2 - 0.1;
 
     	if (Math.sqrt(this.position.x*this.position.x + this.position.y*this.position.y) > cynLimit) {
     		let theta = Math.atan(this.position.y/this.position.x);

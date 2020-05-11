@@ -109,6 +109,7 @@ class Tube extends Group {
         this.nclots = [];
         this.nviruses = [];
         this.nredcells = [];
+        this.objToRemove = [];
         // add blood clot obstacles, viruses, and red blood cells to first tube path
         this.addClots(path, new Vector3(0,0,0));
         this.addViruses(path, new Vector3(0,0,0));
@@ -166,7 +167,7 @@ class Tube extends Group {
 
     // tube.meshes[0] gets removed in scene once it is out of view, for now shift arrays and add tube/objects
     addTube() {
-        // shift arrays and remove objects in this section of tube
+        // shift arrays to remove information for tube.meshes[0]
         this.curves.shift();
         this.meshes.shift();
         this.rotations.shift();
@@ -225,10 +226,12 @@ class Tube extends Group {
         const numClots = Math.ceil(Math.random() * 3 + 1);
         this.nclots.push(numClots);
         for (var i = 0; i < numClots; i++) {
-            var cpos = newPath.getPoint(Math.random());
+            var pos = newPath.getPoint(Math.random());
             //cpos.applyAxisAngle(new Vector3(0,1,0), -1.0 * angle);
-            cpos.add(prevTubeEnd);
-            var bclot = new Clot(cpos);
+            pos.add(prevTubeEnd);
+            pos.x += (Math.random()*2 - 1) * 0.5;
+            pos.y += (Math.random()*2 - 1) * 0.5;
+            var bclot = new Clot(pos);
             this.clots.push(bclot);
             this.add(bclot);
         }
@@ -237,12 +240,12 @@ class Tube extends Group {
     addViruses(newPath, prevTubeEnd) {
         const numViruses = Math.ceil(Math.random() * 10 + 5);
         this.nviruses.push(numViruses);
-        for (var i = 0; i < Math.random() * numViruses; i++) {
+        for (var i = 0; i < numViruses; i++) {
             var pos = newPath.getPoint(Math.random());
             pos.add(prevTubeEnd);
-            pos.x += (Math.random()*2 - 1) * 0.5;
-            pos.y += (Math.random()*2 - 1) * 0.5;
-            pos.z += (Math.random()*2 - 1) * 0.5;
+            pos.x += (Math.random()*2 - 1) * 0.7;
+            pos.y += (Math.random()*2 - 1) * 0.7;
+            //pos.z += (Math.random()*2 - 1) * 0.5;
             var nVirus = new Virus(pos);
             this.viruses.push(nVirus);
             this.add(nVirus);
@@ -252,12 +255,12 @@ class Tube extends Group {
     addRedCells(newPath, prevTubeEnd) {
         const numRC = Math.ceil(Math.random() * 7 + 3);
         this.nredcells.push(numRC);
-        for (var i = 0; i < Math.random() * numRC; i++) {
+        for (var i = 0; i < numRC; i++) {
             var pos = newPath.getPoint(Math.random());
             pos.add(prevTubeEnd);
-            pos.x += (Math.random()*2 - 1) * 0.5;
-            pos.y += (Math.random()*2 - 1) * 0.5;
-            pos.z += (Math.random()*2 - 1) * 0.5;
+            pos.x += (Math.random()*2 - 1) * 0.7;
+            pos.y += (Math.random()*2 - 1) * 0.7;
+            //pos.z += (Math.random()*2 - 1) * 0.5;
             var newRC = new RedCell(pos, Math.random()*0.15 + 0.1);
             this.redcells.push(newRC);
             this.add(newRC);
@@ -270,19 +273,19 @@ class Tube extends Group {
     }
 
     removeObjs() {
-        // remove clots
+        // shift clots
         for (var i = 0; i < this.nclots[0]; i++) {
-            this.remove(this.clots[0]);
+            this.remove(this.clots[0])
             this.clots.shift();
         }
         this.nclots.shift();
-        // remove viruses
+        // shift viruses
         for (var i = 0; i < this.nviruses[0]; i++) {
             this.remove(this.viruses[0]);
             this.viruses.shift();
         }
         this.nviruses.shift();
-        // remove red cells
+        // shift red cells
         for (var i = 0; i < this.nredcells[0]; i++) {
             this.remove(this.redcells[0]);
             this.redcells.shift();

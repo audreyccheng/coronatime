@@ -15,6 +15,7 @@ import { RenderPass } from '../node_modules/three/examples/jsm/postprocessing/Re
 import { GlitchPass } from '../node_modules/three/examples/jsm/postprocessing/GlitchPass.js';
 import { UnrealBloomPass } from '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { Color } from '../node_modules/three/build/three.module.js';
+import './styles.css';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -192,7 +193,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     }
 
     // virus collision detection
-    for (let i = 0; i < scene.tube.viruses.length; i++) {
+    for (let i = 0; i < scene.tube.nviruses[0] + scene.tube.nviruses[1]; i++) {
         let virus = scene.tube.viruses[i];
         var vpos = virus.position.clone();
         vpos.z += 7;
@@ -210,13 +211,13 @@ const onAnimationFrameHandler = (timeStamp) => {
             }
     	}
     }
-
-    for (let i = 0; i < scene.tube.clots.length; i++) {
+    // clot collision detection
+    for (let i = 0; i < scene.tube.nclots[0] + scene.tube.nclots[1]; i++) {
         let clot = scene.tube.clots[i];
         var cpos = clot.position.clone();
         cpos.z += 7;
         var cToSphere = Math.sqrt((cpos.x - scene.sphere.position.x) ** 2) + ((cpos.y - scene.sphere.position.y) ** 2) + ((cpos.z - scene.sphere.position.z) ** 2);
-    	if (cToSphere < S_RADIUS + clot.radius - 0.08) {
+    	if (cToSphere < S_RADIUS + clot.radius - 0.1) {
             if (!showMenu) {
                 endGame();
             }

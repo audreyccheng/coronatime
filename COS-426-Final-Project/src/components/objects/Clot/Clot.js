@@ -11,8 +11,8 @@ class Clot extends Group {
         var texture = new TextureLoader().load(TEXTURE);
         material.map = texture;
 
-        const radius = Math.random()* 0.2 + 0.01;
-        const tubeRadius =  radius;  
+        const radius = Math.random()* 0.19 + 0.01;
+        const tubeRadius =  radius * 2;  
         const radialSegments = 20;  
         const tubularSegments =  30;  
         const p =  1; 
@@ -59,9 +59,9 @@ class Clot extends Group {
         this.rotation.y = Math.random() * Math.PI * 2;
         this.rotation.z = Math.random() * Math.PI * 2;   
         this.radius = geometry.boundingSphere.radius;
-        this.position.x = pos.x + (Math.random()*2 - 1) * 0.5;
-        this.position.y = pos.y + (Math.random()*2 - 1) * 0.5;
-        this.position.z = pos.z + (Math.random()*2 - 1) * 0.5;
+        this.position.x = pos.x;
+        this.position.y = pos.y;
+        this.position.z = pos.z;
         this.name = 'clot';
         this.add(mesh);
     }
