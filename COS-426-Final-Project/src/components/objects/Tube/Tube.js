@@ -96,7 +96,15 @@ class Tube extends Group {
         this.curves = [path];
         this.rotations = [0];
         this.clots = [];
-        this.nclots = [0];
+        // add blood clot obstacles
+        var nClots = Math.ceil(Math.random() * 3 + 1);
+        this.nclots = [nClots];
+        for (var i = 0; i < nClots; i++) {
+            var clot = new Clot(path.getPoint(Math.random()));
+            this.clots.push(clot);
+            this.add(clot);
+        }
+        
 
         this.tSwitch = false;
         for (var i = 0; i < 2; i++) {

@@ -194,6 +194,15 @@ const onAnimationFrameHandler = (timeStamp) => {
     	}
     }
 
+    for (let i = 0; i < scene.tube.clots.length; i++) {
+    	let clot = scene.tube.clots[i];
+    	const S_RADIUS = 0.1;
+        var cToSphere = Math.sqrt((clot.position.x - scene.sphere.position.x) ** 2) + ((clot.position.y - scene.sphere.position.y) ** 2) + ((clot.position.z - scene.sphere.position.z) ** 2);
+    	if (cToSphere < S_RADIUS + clot.radius) {
+    		// die
+    	}
+    }
+
     let spherePos = scene.sphere.position.clone().setZ(0);
     const cameraPos = camera.position.clone().setZ(0);
     const disp = new Vector3().subVectors(spherePos, cameraPos);

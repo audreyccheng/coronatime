@@ -1,5 +1,5 @@
 import { Group, Vector3, MeshBasicMaterial } from 'three';
-import { SphereGeometry, MeshPhongMaterial, Mesh, BackSide, LineBasicMaterial, LineSegments, EdgesGeometry } from "three";
+import { SphereGeometry, MeshPhongMaterial, Mesh, LineBasicMaterial, LineSegments, EdgesGeometry } from "three";
 
 const S_RADIUS = 0.1;
 const S_GEOMETRY = new SphereGeometry (
