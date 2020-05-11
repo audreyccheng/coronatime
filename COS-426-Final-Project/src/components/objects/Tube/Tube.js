@@ -1,16 +1,13 @@
 import { Group, Curve } from 'three';
 import { TubeBufferGeometry, MeshPhongMaterial, Mesh, BackSide, Vector3, TextureLoader, RepeatWrapping } from 'three';
-import { Clot } from 'objects';
+import { Clot, Virus, RedCell, V_RADIUS } from 'objects';
 import TEXTURE from '../../textures/wall-texture.jpg'
+
+//-----CURVES----------------------------------------------------------------------------------
 
 const CURVED_SCALE = 3.2;
 const CURVE_HEIGHT = Math.random() * 2.0 + 1;
 const STRAIGHT_HEIGHT = Math.random() * 10.0 + 19;
-
-const TUBE_SEGMENTS = 50;
-const RAD_SEGMENTS = 60;  
-const T_RADIUS = 1;  
-const CLOSED = false;
 
 class RightCurve extends Curve {
     constructor(scale, curveHeight) {
@@ -81,6 +78,13 @@ class StraightCurve extends Curve {
     }
 }
 
+//-----TUBE----------------------------------------------------------------------------------------
+
+const TUBE_SEGMENTS = 50;
+const RAD_SEGMENTS = 60;  
+const T_RADIUS = 1;  
+const CLOSED = false;
+
 class Tube extends Group {
     constructor(startPos) {
         // Call parent Group() constructor
@@ -93,7 +97,6 @@ class Tube extends Group {
         material.map = texture;
         material.side = BackSide;
 
-        //------------------------------------------------------------------------------------------------
         var path = new RightCurve(CURVED_SCALE, 2.0);
         this.left = [false];
         var geometry = new TubeBufferGeometry(path, TUBE_SEGMENTS, T_RADIUS, RAD_SEGMENTS, CLOSED);
@@ -101,16 +104,17 @@ class Tube extends Group {
         this.curves = [path];
         this.rotations = [0];
         this.clots = [];
-        // add blood clot obstacles
-        var nClots = Math.ceil(Math.random() * 3 + 1);
-        this.nclots = [nClots];
-        for (var i = 0; i < nClots; i++) {
-            var clot = new Clot(path.getPoint(Math.random()));
-            this.clots.push(clot);
-            this.add(clot);
-        }
+        this.viruses = [];
+        this.redcells = [];
+        this.nclots = [];
+        this.nviruses = [];
+        this.nredcells = [];
+        // add blood clot obstacles, viruses, and red blood cells to first tube path
+        this.addClots(path, new Vector3(0,0,0));
+        this.addViruses(path, new Vector3(0,0,0));
+        this.addRedCells(path, new Vector3(0,0,0));
         
-
+        // create 2 more starting tubes
         this.tSwitch = false;
         for (var i = 0; i < 2; i++) {
             var nPath;
@@ -143,16 +147,10 @@ class Tube extends Group {
             this.meshes[this.meshes.length - 1].position.y = end.y;
             this.meshes[this.meshes.length - 1].position.z = end.z;
 
-            // add blood clot obstacles
-            var numClots = Math.ceil(Math.random() * 3 + 1);
-            this.nclots.push(numClots);
-            for (var i = 0; i < numClots; i++) {
-                var cpos = nPath.getPoint(Math.random());
-                cpos.applyAxisAngle(new Vector3(0,1,0), -1.0 * angle);
-                cpos.add(end);
-                var bclot = new Clot(cpos);
-                this.clots.push(bclot);
-            }
+            // add blood clot obstacles, viruses, and red blood cells to the new tube
+            this.addClots(nPath, end);
+            this.addViruses(nPath, end);
+            this.addRedCells(nPath, end);
 
             this.curves.push(nPath);
             this.rotations.push(-1.0 * angle);
@@ -166,18 +164,15 @@ class Tube extends Group {
         this.clots.forEach(obj => this.add(obj));
     }
 
+    // tube.meshes[0] gets removed in scene once it is out of view, for now shift arrays and add tube/objects
     addTube() {
-        //this.remove(this.meshes[0]);
+        // shift arrays and remove objects in this section of tube
         this.curves.shift();
         this.meshes.shift();
         this.rotations.shift();
         this.left.shift();
-        for (var i = 0; i < this.nclots[0]; i++) {
-            this.remove(this.clots[0]);
-            this.clots.shift();
-        }
-        this.nclots.shift();
 
+        // add new tube
         var material = new MeshPhongMaterial({color: 0x330c0c, flatShading: false,});
         var texture = new TextureLoader().load(TEXTURE);
         texture.wrapS = RepeatWrapping;
@@ -220,17 +215,79 @@ class Tube extends Group {
         this.tSwitch = !this.tSwitch;
         this.add(this.meshes[this.meshes.length - 1]);
 
-        // add blood clot obstacles
-        var numClots = Math.ceil(Math.random() * 3 + 1);
+        // add blood clot obstacles, viruses, and red blood cells to the new tube
+        this.addClots(nPath, end);
+        this.addViruses(nPath, end);
+        this.addRedCells(nPath, end);
+    }
+
+    addClots(newPath, prevTubeEnd) {
+        const numClots = Math.ceil(Math.random() * 3 + 1);
         this.nclots.push(numClots);
         for (var i = 0; i < numClots; i++) {
-            var cpos = nPath.getPoint(Math.random());
+            var cpos = newPath.getPoint(Math.random());
             //cpos.applyAxisAngle(new Vector3(0,1,0), -1.0 * angle);
-            cpos.add(end);
+            cpos.add(prevTubeEnd);
             var bclot = new Clot(cpos);
             this.clots.push(bclot);
             this.add(bclot);
         }
+    }
+
+    addViruses(newPath, prevTubeEnd) {
+        const numViruses = Math.ceil(Math.random() * 10 + 5);
+        this.nviruses.push(numViruses);
+        for (var i = 0; i < Math.random() * numViruses; i++) {
+            var pos = newPath.getPoint(Math.random());
+            pos.add(prevTubeEnd);
+            // var offset = Math.random() * (T_RADIUS - V_RADIUS - 0.05)
+            // pos.x += offset * Math.cos(Math.random() * 2 * Math.PI);
+            // pos.y += offset * Math.sin(Math.random() * 2 * Math.PI);
+            var nVirus = new Virus(pos);
+            this.viruses.push(nVirus);
+            this.add(nVirus);
+        }
+    }
+
+    addRedCells(newPath, prevTubeEnd) {
+        const numRC = Math.ceil(Math.random() * 7 + 3);
+        this.nredcells.push(numRC);
+        for (var i = 0; i < Math.random() * numRC; i++) {
+            var pos = newPath.getPoint(Math.random());
+            pos.add(prevTubeEnd);
+            // var offset = Math.random() * 0.8
+            // pos.x += offset * Math.cos(Math.random() * 2 * Math.PI);
+            // pos.y += offset * Math.sin(Math.random() * 2 * Math.PI);
+            var newRC = new RedCell(pos, Math.random()*0.15 + 0.1);
+            this.redcells.push(newRC);
+            this.add(newRC);
+        }
+    }
+
+    removeVirus(index) {
+        this.remove(this.viruses[index]);
+        this.viruses.splice(index, 1);
+    }
+
+    removeObjs() {
+        // remove clots
+        for (var i = 0; i < this.nclots[0]; i++) {
+            this.remove(this.clots[0]);
+            this.clots.shift();
+        }
+        this.nclots.shift();
+        // remove viruses
+        for (var i = 0; i < this.nviruses[0]; i++) {
+            this.remove(this.viruses[0]);
+            this.viruses.shift();
+        }
+        this.nviruses.shift();
+        // remove red cells
+        for (var i = 0; i < this.nredcells[0]; i++) {
+            this.remove(this.redcells[0]);
+            this.redcells.shift();
+        }
+        this.nredcells.shift();
     }
 }
 

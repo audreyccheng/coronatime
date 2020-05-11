@@ -9,6 +9,8 @@ const S_GEOMETRY = new SphereGeometry (
 );
 const DRAG = 0.9;
 
+export {S_RADIUS};
+
 class Sphere extends Group {
     constructor(zBeginning) {
         // Call parent Group() constructor
