@@ -1,6 +1,7 @@
 import { Group, Curve } from 'three';
-import { TubeBufferGeometry, MeshPhongMaterial, Mesh, BackSide, Vector3 } from 'three';
+import { TubeBufferGeometry, MeshPhongMaterial, Mesh, BackSide, Vector3, TextureLoader, RepeatWrapping } from 'three';
 import { Clot } from 'objects';
+import TEXTURE from '../../textures/wall-texture.jpg'
 
 const CURVED_SCALE = 3.2;
 const CURVE_HEIGHT = Math.random() * 2.0 + 1;
@@ -85,7 +86,11 @@ class Tube extends Group {
         // Call parent Group() constructor
         super();
         
-        var material = new MeshPhongMaterial({color: 0x330c0c, flatShading: true,});
+        var material = new MeshPhongMaterial({color: 0x330c0c, flatShading: false,});
+        var texture = new TextureLoader().load(TEXTURE);
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+        material.map = texture;
         material.side = BackSide;
 
         //------------------------------------------------------------------------------------------------
@@ -173,7 +178,11 @@ class Tube extends Group {
         }
         this.nclots.shift();
 
-        var material = new MeshPhongMaterial({color: 0x330c0c, flatShading: true,});
+        var material = new MeshPhongMaterial({color: 0x330c0c, flatShading: false,});
+        var texture = new TextureLoader().load(TEXTURE);
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+        material.map = texture;
         material.side = BackSide;
 
         var nPath;

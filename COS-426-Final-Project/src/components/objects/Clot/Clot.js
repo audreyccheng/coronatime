@@ -1,4 +1,4 @@
-import { Group, Vector3, SphereGeometry, Mesh, MeshPhongMaterial, TextureLoader,TorusKnotBufferGeometry,RepeatWrapping, Euler } from 'three';
+import { Group, Vector3, SphereGeometry, Mesh, MeshPhongMaterial, TextureLoader,TorusKnotBufferGeometry, RepeatWrapping, Euler } from 'three';
 import TEXTURE from '../../textures/red-blood-cells.jpg'
 //Blood-clot-texture.jpg'
 

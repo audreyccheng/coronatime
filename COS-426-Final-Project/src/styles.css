@@ -38,6 +38,15 @@ body{
     background-color: rgba(0, 0, 0, 0.6);
 }
 
+#endmenu {
+    padding-top: 60px;
+    display: none;
+}
+
+#endmenu.ended {
+    display: block;
+}
+
 #scoremenu {
     display: none;
     position: absolute;
@@ -52,3 +61,4 @@ body{
 #scoremenu.started {
     display: block;
 }
+

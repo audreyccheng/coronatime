@@ -14,7 +14,7 @@ import { EffectComposer } from '../node_modules/three/examples/jsm/postprocessin
 import { RenderPass } from '../node_modules/three/examples/jsm/postprocessing/RenderPass.js';
 import { GlitchPass } from '../node_modules/three/examples/jsm/postprocessing/GlitchPass.js';
 import { UnrealBloomPass } from '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { Color } from 'three/build/three.module';
+import { Color } from '../node_modules/three/build/three.module.js';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -75,9 +75,12 @@ let curTubeDist = 0;
 let prevAngle = 0;
 
 let showMenu = false;
+let endedGame = false;
 const startmenu = document.getElementById("startmenu");
 const currentScore = document.getElementById("currentscore");
 const scoreMenu = document.getElementById("scoremenu");
+const endmenu = document.getElementById("endmenu");
+const endScore = document.getElementById("endscore");
 
 let soundOn = false;
 
@@ -93,6 +96,22 @@ const startGame = event => {
         showMenu = false;
     }
 };
+
+function endGame() {
+    endmenu.classList.add("ended");
+    endScore.textContent = `${scene.virusCount}`;
+    endedGame = true;
+    scoremenu.classList.remove("started");
+    if (soundOn) {
+        audioLoader.load( './src/components/sounds/Osmosis_Jones_Intro.mp3', function( buffer ) {
+            sound.setBuffer( buffer );
+            sound.setLoop(true);
+            sound.autoplay = true;
+            sound.setVolume(0.5);
+            sound.play();
+        });
+    }
+}
 
 startGame();
 // Render loop
@@ -160,15 +179,6 @@ const onAnimationFrameHandler = (timeStamp) => {
         obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
     });
 
-    if (showMenu) {
-        // audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
-        //     sound.setBuffer( buffer );
-        //     sound.setLoop(true);
-        //     sound.setVolume(0.5);
-        //     sound.play();
-        // });
-    }
-
     currentScore.textContent = `${scene.virusCount}`;
 
     scene.simulate();
@@ -187,8 +197,8 @@ const onAnimationFrameHandler = (timeStamp) => {
     	if (vToSphere < S_RADIUS + V_RADIUS - 0.1 &&  Math.abs(scene.sphere.position.z - virus.position.z) < 0.1) {
     		scene.addViruses(i);
     		scene.addVirusCount();
-            if (!showMenu && soundOn) {
-                audioLoader2.load( './src/squish.mp3', function( buffer ) {
+            if (!showMenu && !endedGame && soundOn) {
+                audioLoader2.load( './src/components/sounds/squish.mp3', function( buffer ) {
                     sound.setBuffer( buffer );
                     sound.setLoop(false);
                     sound.setVolume(0.4);
@@ -203,7 +213,17 @@ const onAnimationFrameHandler = (timeStamp) => {
     	const S_RADIUS = 0.1;
         var cToSphere = Math.sqrt((clot.position.x - scene.sphere.position.x) ** 2) + ((clot.position.y - scene.sphere.position.y) ** 2) + ((clot.position.z - scene.sphere.position.z) ** 2);
     	if (cToSphere < S_RADIUS + clot.radius) {
-    		// die
+            if (!showMenu) {
+                endGame();
+            }
+            if (!showMenu && !endedGame && soundOn) {
+                audioLoader2.load( './src/components/sounds/crash.mp3', function( buffer ) {
+                    sound.setBuffer( buffer );
+                    sound.setLoop(false);
+                    sound.setVolume(0.4);
+                    sound.play();
+                });
+            }
     	}
     }
 
@@ -220,7 +240,6 @@ const onAnimationFrameHandler = (timeStamp) => {
     composer.render();
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
-
 
 // Resize Handler
 const windowResizeHandler = () => {
@@ -246,10 +265,11 @@ function handleImpactEvents(event) {
         ArrowRight: new Vector3(0.02,  0,  0),
     };
 
+    // turn sound on/off
     if (event.key == "m") {
         soundOn = !soundOn;
         if (showMenu && soundOn) {
-            audioLoader.load( './src/Osmosis_Jones_Intro.mp3', function( buffer ) {
+            audioLoader.load( './src/components/sounds/Osmosis_Jones_Intro.mp3', function( buffer ) {
                 sound.setBuffer( buffer );
                 sound.setLoop(true);
                 sound.autoplay = true;
@@ -262,6 +282,34 @@ function handleImpactEvents(event) {
                 sound.stop();
             }
         }
+    }
+
+    // end game
+    if (event.key == "q" && !showMenu) {
+        endGame();
+        return;
+    }
+
+    // return to start menu after game ends
+    if (endedGame && event.key == "s") {
+        showMenu = false;
+        endedGame = false;
+        scene.virusCount = 0;
+        endmenu.classList.remove("ended");
+        startGame();
+        return;
+    }
+
+    // restart game after it ends
+    if (endedGame && event.key == " ") {
+        endedGame = false;
+        endmenu.classList.remove("ended");
+        scene.virusCount = 0;
+        scoremenu.classList.add("started");
+        if (sound.isPlaying) {
+            sound.stop();
+        }
+        return;
     }
 
 
@@ -278,7 +326,7 @@ function handleImpactEvents(event) {
     }
 
     // ignore other key presses if game hasn't started
-    if (showMenu) {
+    if (showMenu || endedGame) {
         return;
     }
 

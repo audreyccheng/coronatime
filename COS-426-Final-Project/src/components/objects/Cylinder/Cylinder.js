@@ -22,13 +22,13 @@ class Cylinder extends Group {
 
         const geometry = C_GEOMETRY;
         var geo = new EdgesGeometry( geometry );
-
+        // var smap =  ImageUtils.loadTexture('../../textures/wall-texture.jpg', {}, function(){});
         var material;
         if (colorSwitch) {
-            material = new MeshPhongMaterial({color: 0x330c0c, flatShading: true,});
+            material = new MeshPhongMaterial({color: 0x330c0c, flatShading: false,}); // bmap: smap, 
             // material = new LineBasicMaterial({color: 0x330c0c, linewidth: 0 } );
         } else {
-            material = new MeshPhongMaterial({color: 0x300c0c, flatShading: true,});
+            material = new MeshPhongMaterial({color: 0x300c0c, flatShading: false,});
             // material = new LineBasicMaterial({color: 0x300c0c, linewidth: 0 } );
         }
 
