@@ -240,9 +240,9 @@ class Tube extends Group {
         for (var i = 0; i < Math.random() * numViruses; i++) {
             var pos = newPath.getPoint(Math.random());
             pos.add(prevTubeEnd);
-            // var offset = Math.random() * (T_RADIUS - V_RADIUS - 0.05)
-            // pos.x += offset * Math.cos(Math.random() * 2 * Math.PI);
-            // pos.y += offset * Math.sin(Math.random() * 2 * Math.PI);
+            pos.x += (Math.random()*2 - 1) * 0.5;
+            pos.y += (Math.random()*2 - 1) * 0.5;
+            pos.z += (Math.random()*2 - 1) * 0.5;
             var nVirus = new Virus(pos);
             this.viruses.push(nVirus);
             this.add(nVirus);
@@ -255,9 +255,9 @@ class Tube extends Group {
         for (var i = 0; i < Math.random() * numRC; i++) {
             var pos = newPath.getPoint(Math.random());
             pos.add(prevTubeEnd);
-            // var offset = Math.random() * 0.8
-            // pos.x += offset * Math.cos(Math.random() * 2 * Math.PI);
-            // pos.y += offset * Math.sin(Math.random() * 2 * Math.PI);
+            pos.x += (Math.random()*2 - 1) * 0.5;
+            pos.y += (Math.random()*2 - 1) * 0.5;
+            pos.z += (Math.random()*2 - 1) * 0.5;
             var newRC = new RedCell(pos, Math.random()*0.15 + 0.1);
             this.redcells.push(newRC);
             this.add(newRC);
