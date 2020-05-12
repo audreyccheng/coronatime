@@ -289,11 +289,21 @@ class Tube extends Group {
     }
 
     removeVirus(index) {
+        if (index < this.nviruses[0]) {
+            this.nviruses[0] = this.nviruses[0] - 1;
+        } else {
+            this.nviruses[1] = this.nviruses[1] - 1;
+        }
         this.remove(this.viruses[index]);
         this.viruses.splice(index, 1);
     }
 
     removeAntibody(index) {
+        if (index < this.nantibodies[0]) {
+            this.nantibodies[0] = this.nantibodies[0] - 1;
+        } else {
+            this.nantibodies[1] = this.nantibodies[1] - 1;
+        }
         this.remove(this.antibodies[index]);
         this.antibodies.splice(index, 1);
     }
