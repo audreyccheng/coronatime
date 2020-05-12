@@ -1,8 +1,7 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, Vector3, FontLoader, MeshPhongMaterial, Mesh, TextGeometry } from 'three';
-import { Sphere, RedCell, V_RADIUS, Tube, Virus } from 'objects';
+import { Sphere, Tube } from 'objects';
 import { BasicLights } from 'lights';
-import Antibody from '../objects/Antibody/Antibody';
 
 class SeedScene extends Scene {
     constructor() {

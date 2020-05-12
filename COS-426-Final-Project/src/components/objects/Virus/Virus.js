@@ -1,23 +1,12 @@
 import { Group, ConeGeometry } from 'three';
 import { SphereGeometry, MeshPhongMaterial, Mesh, Vector3 } from "three";
 
-const V_RADIUS = 0.06;
+const V_RADMAX = 0.08;
+const V_RADMIN = 0.04;
 const S_SEGMENTS = 20; 
-const V_GEOMETRY = new SphereGeometry(
-    V_RADIUS - 0.02,
-    S_SEGMENTS,
-    S_SEGMENTS,
-);
 
 const C_RADIUS = 0.005;
 const C_SEGMENTS = 20;
-const C_GEOMETRY = new ConeGeometry(
-    C_RADIUS, 
-    2 * V_RADIUS, // height of cone
-    C_SEGMENTS, // radial segments
-);
-
-export {V_RADIUS};
 
 class Virus extends Group {
     constructor(pos) {
@@ -27,15 +16,24 @@ class Virus extends Group {
         this.position.x = pos.x;
         this.position.y = pos.y;
         this.position.z = pos.z;
+        this.radius = Math.random() * (V_RADMAX - V_RADMIN) + V_RADMIN;
 
         const material = new MeshPhongMaterial({color: 0x01680C, flatShading: false,});
 
-        const body_geometry = V_GEOMETRY;
+        const body_geometry = new SphereGeometry(
+            this.radius * 0.75,
+            S_SEGMENTS,
+            S_SEGMENTS,
+        );
         const body = new Mesh(body_geometry, material);
         
         // randomly & uniformly sample from surface of sphere to get position of spikes 
         const N = 6;
-        const cone_geometry = C_GEOMETRY;
+        const cone_geometry = new ConeGeometry(
+            C_RADIUS, 
+            2 * this.radius, // height of cone
+            C_SEGMENTS, // radial segments
+        );
         var spikes = [];
         for (var i = 0; i < N; i++) {
             for (var j = 0; j < N; j++) {
