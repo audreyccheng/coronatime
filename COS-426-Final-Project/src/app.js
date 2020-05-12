@@ -17,7 +17,9 @@ import { UnrealBloomPass } from '../node_modules/three/examples/jsm/postprocessi
 import './styles.css';
 import OJSONG from './components/sounds/Osmosis_Jones_Intro.mp3';
 import VIRUS_SOUND from './components/sounds/squish.mp3';
-import BC_SOUND from './components/sounds/crash.mp3'
+import BC_SOUND from './components/sounds/crash.mp3';
+import A1_SOUND from './components/sounds/antibody-1.mp3';
+import A2_SOUND from './components/sounds/antibody-2.mp3'
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -116,6 +118,12 @@ function endGame() {
     scoremenu.classList.remove("started");
     curSpeed =  startSpeed;
     if (soundOn) {
+        audioLoader2.load(BC_SOUND, function( buffer ) {
+                    sound.setBuffer( buffer );
+                    sound.setLoop(false);
+                    sound.setVolume(0.4);
+                    sound.play();
+                });
         audioLoader.load(OJSONG, function( buffer ) {
             sound.setBuffer( buffer );
             sound.setLoop(true);
@@ -244,14 +252,6 @@ const onAnimationFrameHandler = (timeStamp) => {
         var cpos = clot.position.clone();
         cpos.z += 7;
     	if (cpos.distanceTo(scene.sphere.position) < S_RADIUS + clot.radius - 0.1 && scene.sphere.invincible == false) {
-            if (!showMenu && !endedGame && soundOn) {
-                audioLoader2.load(BC_SOUND, function( buffer ) {
-                    sound.setBuffer( buffer );
-                    sound.setLoop(false);
-                    sound.setVolume(0.4);
-                    sound.play();
-                });
-            }
             if (!showMenu) {
                 endGame();
             }
@@ -283,12 +283,28 @@ const onAnimationFrameHandler = (timeStamp) => {
                 scene.sphere.invincible = true;
                 invincibleDistance = 0;
                 bloomPass.strength = 2.0;
+                if (!showMenu && !endedGame && soundOn) {
+                    audioLoader2.load(A1_SOUND, function( buffer ) {
+                        sound.setBuffer( buffer );
+                        sound.setLoop(false);
+                        sound.setVolume(0.4);
+                        sound.play();
+                    });
+                }
             } else if (anti.type == 'speed') { 
                 // speed powerup
                 if (curSpeed - antiSlowDown > startSpeed) {
                     curSpeed -= antiSlowDown
                 } else {
                     curSpeed = startSpeed;
+                }
+                if (!showMenu && !endedGame && soundOn) {
+                    audioLoader2.load(A2_SOUND, function( buffer ) {
+                        sound.setBuffer( buffer );
+                        sound.setLoop(false);
+                        sound.setVolume(0.4);
+                        sound.play();
+                    });
                 }
             }
             scene.tube.removeAntibody(i);
@@ -363,10 +379,10 @@ function handleImpactEvents(event) {
     }
 
     // end game
-    if (event.key == "q" && !showMenu) {
-        endGame();
-        return;
-    }
+    // if (event.key == "q" && !showMenu) {
+    //     endGame();
+    //     return;
+    // }
 
     // return to start menu after game ends
     if (endedGame && event.key == "s") {
