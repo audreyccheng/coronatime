@@ -13,32 +13,35 @@
 	<body>
 		<div id="startmenu" class="overlay overlaybg">
 			<div class="overlaytext">
-				<p>CoronaTime</p>
+				<p><b>CoronaTime</b></p>
 				<p class="names">By Audrey Cheng & Christine Lu</p>
-				<p class="description">You are a white blood cell trying to fight off coronavirus in your blood vessels!
-					Try to kill as many
+				<p class="description">You are a <b>white blood cell</b> trying to fight off <b>coronavirus</b> in your blood vessels!
+					Try to <b>kill</b> as many viruses as you can. Avoid getting caught in a <b>blood clot</b>! <b>Antibodies</b> give you powerups.
 				</p>
-				<img class="resize" src="./src/components/images/blood-clot.png" alt="Player"><div class="startsubtext">= You, a white blood clot</div>
-				<img class="resize" src="./src/components/images/blood-clot.png" alt="Virus"><div class="startsubtext">= Virus</div>
-				<img class="resize" src="./src/components/images/blood-clot.png" alt="Red Blood Cell"><div class="startsubtext">= Red Blood Cell</div>
-				<img class="resize" src="./src/components/images/blood-clot.png" alt="Blood Clot"><div class="startsubtext">= Blood Clot</div>
 				<div class="startsubtext">
+					<img class="left" src="./components/images/player.png" alt="Player">= You, a White blood cell
+					<img class="right" src="./components/images/virus.png" alt="Virus">= Virus<br>
+					<img class="left" src="./components/images/blood-cell.png" alt="Red Blood Cell">= Red blood cell
+					<img class="right" src="./components/images/blood-clot.png" alt="Blood Clot">= Blood clot<br>
 					<p>Press up/down/left/right arrow keys to move</p>
 					<p>Press "m" for music/sound effects</p>
 					<p>Press space to START!</p>
 				</div>
 			</div>
 		</div>
-		<div id="endmenu" class="overlay overlaybg">
-			<div class="overlaytext">
-				<p>You died!</p>
-				<p>You killed <span id="endscore"></span> viruses</p>
-				<p class="startsubtext">Press space to try again</p>
-				<p class="startsubtext">Press "s" to return to start menu</p>
+		<div id="endmenu" class="endoverlay overlaybg">
+			<div class="endtext">
+				<p><b>You died!</b></p>
+				<div class="endtextscore">
+					<p>You killed <b><span id="endscore"></span></b> viruses</p>
+					<p>Your best score is <b><span id="bestscore"></span></b> viruses</p>
+				</div>
+				<p class="endsubtext">Press space to try again</p>
+				<p class="endsubtext">Press "s" to return to start menu</p>
 			</div>
 		</div>
 		<div id="scoremenu">
-			<div>Current Score: <span id="currentscore"></span></div>
+			<div>Current Score: <span id="currentscore"></span> viruses</div>
 		</div>
 	</body>
 </html>

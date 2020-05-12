@@ -81,8 +81,10 @@ const currentScore = document.getElementById("currentscore");
 const scoreMenu = document.getElementById("scoremenu");
 const endmenu = document.getElementById("endmenu");
 const endScore = document.getElementById("endscore");
+const bestScore = document.getElementById("bestscore");
 
 let soundOn = false;
+let highScore = 0;
 
 let netForce = new Vector3(0, 0, 0);
 let forceApplied = false;
@@ -106,6 +108,10 @@ const startGame = event => {
 function endGame() {
     endmenu.classList.add("ended");
     endScore.textContent = `${scene.virusCount}`;
+    if (scene.virusCount > highScore) {
+        highScore = scene.virusCount;
+    }
+    bestScore.textContent = `${highScore}`;
     endedGame = true;
     scoremenu.classList.remove("started");
     curSpeed =  startSpeed;
