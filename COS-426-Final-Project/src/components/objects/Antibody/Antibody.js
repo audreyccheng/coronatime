@@ -4,8 +4,6 @@ import { CylinderGeometry, ExtrudeBufferGeometry, Shape, Mesh, MeshBasicMaterial
 const TUBE_HEIGHT = 0.02;
 const TUBE_RADIUS = 0.004;  
 
-const DRAG = 0.9;
-
 class Antibody extends Group {
     constructor(pos) {
         // Call parent Group() constructor
@@ -35,6 +33,9 @@ class Antibody extends Group {
         mesh2.position.x += TUBE_HEIGHT/2 * Math.cos(0.7) + 0.002;
         mesh4.position.x -= TUBE_HEIGHT/2 * Math.cos(0.7) + 0.01;
         mesh5.position.x += TUBE_HEIGHT/2 * Math.cos(0.7) + 0.01;
+
+        this.height = TUBE_HEIGHT * Math.sin(0.7) + TUBE_HEIGHT;
+        this.width = TUBE_HEIGHT * Math.cos(0.7) * 2
         
         this.position.x = pos.x;
         this.position.y = pos.y;

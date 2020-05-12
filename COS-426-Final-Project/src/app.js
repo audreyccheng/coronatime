@@ -237,6 +237,19 @@ const onAnimationFrameHandler = (timeStamp) => {
             rc.position.add(rpos.multiplyScalar(0.1));
         }
     }
+    // antibody collision detection
+    for (let i = 0; i < scene.tube.nantibodies[0] + scene.tube.nantibodies[1]; i++) {
+        let anti = scene.tube.antibodies[i];
+        var apos = anti.position.clone();
+        apos.z += 7;
+        // apply power up if collision with antibody
+        if (Math.abs(scene.sphere.position.y - apos.y) < anti.height/2 + .02 && Math.abs(scene.sphere.position.x - apos.x) < anti.width/2 + .02) {
+            if (Math.abs(scene.sphere.position.z - apos.z) < S_RADIUS) {
+                //powerup
+                console.log("powerup");
+            }
+        }
+    }
 
     let spherePos = scene.sphere.position.clone().setZ(0);
     const cameraPos = camera.position.clone().setZ(0);
