@@ -16,6 +16,9 @@ import { GlitchPass } from '../node_modules/three/examples/jsm/postprocessing/Gl
 import { UnrealBloomPass } from '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { Color } from '../node_modules/three/build/three.module.js';
 import './styles.css';
+import OJSONG from './components/sounds/Osmosis_Jones_Intro.mp3';
+import VIRUS_SOUND from './components/sounds/squish.mp3';
+import BC_SOUND from './components/sounds/crash.mp3'
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -81,6 +84,12 @@ const endScore = document.getElementById("endscore");
 
 let soundOn = false;
 
+let netForce = new Vector3(0, 0, 0);
+let forceApplied = false;
+let startSpeed = 0.03;
+let curSpeed = 0.03;
+let maxSpeed = 0.15;
+
 const startGame = event => {
     if (!showMenu) {
         startmenu.classList.add("started");
@@ -99,8 +108,9 @@ function endGame() {
     endScore.textContent = `${scene.virusCount}`;
     endedGame = true;
     scoremenu.classList.remove("started");
+    curSpeed =  startSpeed;
     if (soundOn) {
-        audioLoader.load( './src/components/sounds/Osmosis_Jones_Intro.mp3', function( buffer ) {
+        audioLoader.load(OJSONG, function( buffer ) {
             sound.setBuffer( buffer );
             sound.setLoop(true);
             sound.autoplay = true;
@@ -111,6 +121,7 @@ function endGame() {
 }
 
 startGame();
+
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
     // controls.update();
@@ -124,6 +135,14 @@ const onAnimationFrameHandler = (timeStamp) => {
         tubeRemove = -1;
     }
 
+    if (forceApplied) {
+        scene.sphere.addForce(netForce);
+    }
+
+    if (curSpeed < maxSpeed) {
+        curSpeed += 0.00007;
+    }
+
     // while (scene.viruses[0] && scene.viruses[0].position.z > camera.position.z + C_HEIGHT/2) {
     // 	scene.addViruses(0);
     // }
@@ -131,7 +150,6 @@ const onAnimationFrameHandler = (timeStamp) => {
     // 	scene.addRedCells(0);
     // }
 
-    const curSpeed = 0.1;
     const curve = scene.tube.curves[0];
     const length = curve.getLength();
 
@@ -201,7 +219,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     		scene.tube.removeVirus(i);
     		scene.addVirusCount();
             if (!showMenu && !endedGame && soundOn) {
-                audioLoader2.load( './src/components/sounds/squish.mp3', function( buffer ) {
+                audioLoader2.load(VIRUS_SOUND, function( buffer ) {
                     sound.setBuffer( buffer );
                     sound.setLoop(false);
                     sound.setVolume(0.4);
@@ -216,16 +234,16 @@ const onAnimationFrameHandler = (timeStamp) => {
         var cpos = clot.position.clone();
         cpos.z += 7;
     	if (cpos.distanceTo(scene.sphere.position) < S_RADIUS + clot.radius - 0.1) {
-            if (!showMenu) {
-                endGame();
-            }
             if (!showMenu && !endedGame && soundOn) {
-                audioLoader2.load( './src/components/sounds/crash.mp3', function( buffer ) {
+                audioLoader2.load(BC_SOUND, function( buffer ) {
                     sound.setBuffer( buffer );
                     sound.setLoop(false);
                     sound.setVolume(0.4);
                     sound.play();
                 });
+            }
+            if (!showMenu) {
+                endGame();
             }
     	}
     }
@@ -267,6 +285,11 @@ windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
 window.addEventListener("keydown", handleImpactEvents, false);
+window.addEventListener("keyup", handleReleaseEvents, false);
+
+function handleReleaseEvents(event) {
+    forceApplied = false;
+}
 
 function handleImpactEvents(event) {
     // Ignore keypresses typed into a text box
@@ -274,17 +297,22 @@ function handleImpactEvents(event) {
 
     // The vectors to which each key code in this handler maps
     const keyMap = {
-        ArrowUp: new Vector3(0,  0.02,  0),
-        ArrowDown: new Vector3(0,  -0.02,  0),
-        ArrowLeft: new Vector3(-0.02,  0,  0),
-        ArrowRight: new Vector3(0.02,  0,  0),
+        ArrowUp: new Vector3(0,  0.005,  0),
+        ArrowDown: new Vector3(0,  -0.005,  0),
+        ArrowLeft: new Vector3(-0.005,  0,  0),
+        ArrowRight: new Vector3(0.005,  0,  0),
     };
 
     // turn sound on/off
     if (event.key == "m") {
-        soundOn = !soundOn;
+        if (soundOn) {
+            soundOn = false;
+        } else {
+            soundOn = true;
+        }
+        // soundOn = !soundOn;
         if (showMenu && soundOn) {
-            audioLoader.load( './src/components/sounds/Osmosis_Jones_Intro.mp3', function( buffer ) {
+            audioLoader.load(OJSONG, function( buffer ) {
                 sound.setBuffer( buffer );
                 sound.setLoop(true);
                 sound.autoplay = true;
@@ -321,6 +349,7 @@ function handleImpactEvents(event) {
         endmenu.classList.remove("ended");
         scene.virusCount = 0;
         scoremenu.classList.add("started");
+        curSpeed =  startSpeed;
         if (sound.isPlaying) {
             sound.stop();
         }
@@ -334,6 +363,7 @@ function handleImpactEvents(event) {
         showMenu = false;
         scene.virusCount = 0;
         scoremenu.classList.add("started");
+        curSpeed =  startSpeed;
         if (sound.isPlaying) {
             sound.stop();
         }
@@ -360,6 +390,8 @@ function handleImpactEvents(event) {
 
     // move sphere position if arrow key pressed
     if (scene.sphere != null) {
-        scene.sphere.addForce(keyMap[event.key]);
+        netForce = keyMap[event.key];
+        forceApplied = true;
+        // scene.sphere.addForce(keyMap[event.key]);
     }
 }
