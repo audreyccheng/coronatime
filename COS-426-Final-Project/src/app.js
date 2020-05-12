@@ -84,8 +84,8 @@ let soundOn = false;
 
 let netForce = new Vector3(0, 0, 0);
 let forceApplied = false;
-let startSpeed = 0.03;
-let curSpeed = 0.03;
+let startSpeed = 0.05;
+let curSpeed = 0.05;
 let maxSpeed = 0.15;
 
 const startGame = event => {
@@ -217,7 +217,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         var vpos = virus.position.clone();
         vpos.z += 7;
         //&& Math.abs(scene.sphere.position.z - vpos.z) < 0.095
-        if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + virus.radius) {
+        if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + virus.radius + 0.01) {
     		scene.tube.removeVirus(i);
     		scene.addVirusCount();
             if (!showMenu && !endedGame && soundOn) {
