@@ -9,12 +9,11 @@
 import { WebGLRenderer, PerspectiveCamera, Vector3, Vector2, AudioListener, Audio, AudioLoader } from '../node_modules/three/src/Three.js';
 import { OrbitControls } from '../node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from './components/scenes';
-import { C_HEIGHT, V_RADIUS, S_RADIUS } from './components/objects';
+import { S_RADIUS } from './components/objects';
 import { EffectComposer } from '../node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from '../node_modules/three/examples/jsm/postprocessing/RenderPass.js';
 import { GlitchPass } from '../node_modules/three/examples/jsm/postprocessing/GlitchPass.js';
 import { UnrealBloomPass } from '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { Color } from '../node_modules/three/build/three.module.js';
 import './styles.css';
 
 // Initialize core ThreeJS components
@@ -64,8 +63,7 @@ var sound = new Audio( listener );
 var audioLoader = new AudioLoader();
 var audioLoader2 = new AudioLoader();
 
-let roundDistance = 0;
-let maxDistance = 0;
+let invincibleDistance = 0;
 
 let tubeRemove = -1;
 let curTubeDist = 0;
@@ -123,6 +121,11 @@ const onAnimationFrameHandler = (timeStamp) => {
         scene.tube.removeObjs();
         tubeRemove = -1;
     }
+    if (invincibleDistance >= 10) {
+        scene.sphere.invincible = false;
+        invincibleDistance = 0;
+        bloomPass.strength = 0.5;
+    }
 
     // while (scene.viruses[0] && scene.viruses[0].position.z > camera.position.z + C_HEIGHT/2) {
     // 	scene.addViruses(0);
@@ -131,7 +134,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     // 	scene.addRedCells(0);
     // }
 
-    const curSpeed = 0.1;
+    const curSpeed = 0.06;
     const curve = scene.tube.curves[0];
     const length = curve.getLength();
 
@@ -149,8 +152,10 @@ const onAnimationFrameHandler = (timeStamp) => {
         scene.tube.rotateY(angle - prevAngle);
     }
     prevAngle = angle;
-    roundDistance += curSpeed;
-
+    if (scene.sphere.invincible) {
+        invincibleDistance += curSpeed;
+    }
+    
     [...scene.tube.meshes].forEach(obj => {
         obj.position.x += vecMove.x;
         obj.position.y += vecMove.y;
@@ -194,7 +199,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         var vpos = virus.position.clone();
         vpos.z += 7;
         //&& Math.abs(scene.sphere.position.z - vpos.z) < 0.095
-        if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + V_RADIUS) {
+        if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + virus.radius) {
     		scene.tube.removeVirus(i);
     		scene.addVirusCount();
             if (!showMenu && !endedGame && soundOn) {
@@ -212,7 +217,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         let clot = scene.tube.clots[i];
         var cpos = clot.position.clone();
         cpos.z += 7;
-    	if (cpos.distanceTo(scene.sphere.position) < S_RADIUS + clot.radius - 0.1) {
+    	if (cpos.distanceTo(scene.sphere.position) < S_RADIUS + clot.radius - 0.1 && scene.sphere.invincible == false) {
             if (!showMenu) {
                 endGame();
             }
@@ -232,7 +237,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         var rpos = rc.position.clone();
         rpos.z += 7;
         // if a red cell gets too close, move it away from the sphere
-        if (rpos.distanceTo(scene.sphere.position) < rc.radius + V_RADIUS + 0.1) {
+        if (rpos.distanceTo(scene.sphere.position) < rc.radius + S_RADIUS + 0.1) {
             rpos.sub(scene.sphere.position);
             rc.position.add(rpos.multiplyScalar(0.1));
         }
@@ -243,10 +248,14 @@ const onAnimationFrameHandler = (timeStamp) => {
         var apos = anti.position.clone();
         apos.z += 7;
         // apply power up if collision with antibody
-        if (Math.abs(scene.sphere.position.y - apos.y) < anti.height/2 + .02 && Math.abs(scene.sphere.position.x - apos.x) < anti.width/2 + .02) {
-            if (Math.abs(scene.sphere.position.z - apos.z) < S_RADIUS) {
-                //powerup
-                console.log("powerup");
+        if (apos.distanceTo(scene.sphere.position) < S_RADIUS + .05 ) {
+            if (anti.type == 'invincible') {
+                // invincibility powerup
+                scene.sphere.invincible = true;
+                invincibleDistance = 0;
+                bloomPass.strength = 1.0;
+            } else if (anti.type == 'speed') { 
+                // speed powerup
             }
         }
     }

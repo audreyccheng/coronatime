@@ -1,6 +1,6 @@
 import { Group, Curve } from 'three';
 import { TubeBufferGeometry, MeshPhongMaterial, Mesh, BackSide, Vector3, TextureLoader, RepeatWrapping } from 'three';
-import { Clot, Virus, RedCell, V_RADIUS, Antibody } from 'objects';
+import { Clot, Virus, RedCell, Antibody } from 'objects';
 import TEXTURE from '../../textures/wall-texture.jpg'
 
 //-----CURVES----------------------------------------------------------------------------------
@@ -277,7 +277,12 @@ class Tube extends Group {
             pos.add(prevTubeEnd);
             pos.x += (Math.random()*2 - 1) * 0.6;
             pos.y += (Math.random()*2 - 1) * 0.6;
-            var nAnti = new Antibody(pos);
+            var nAnti;
+            if (Math.random() < 0.5) {
+                nAnti = new Antibody(pos, 'invincible');
+            } else {
+                nAnti = new Antibody(pos, 'speed');
+            }
             this.antibodies.push(nAnti);
             this.add(nAnti);
         }

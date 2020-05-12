@@ -33,6 +33,7 @@ class Sphere extends Group {
         this.add(mesh);
         this.velocity = new Vector3();
         this.netForces = new Vector3();
+        this.invincible = false;
     }
 
     addForce(force) {
