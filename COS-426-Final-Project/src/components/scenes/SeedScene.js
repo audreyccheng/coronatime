@@ -28,4 +28,3 @@ class SeedScene extends Scene {
 }
 
 export default SeedScene;
-

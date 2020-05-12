@@ -1,7 +1,7 @@
 import { Group, Curve } from 'three';
-import { TubeBufferGeometry, MeshPhongMaterial, Mesh, BackSide, Vector3, TextureLoader, RepeatWrapping } from 'three';
+import { TubeBufferGeometry, MeshPhongMaterial, Mesh, BackSide, Vector3, TextureLoader, RepeatWrapping, MirroredRepeatWrapping } from 'three';
 import { Clot, Virus, RedCell, Antibody } from 'objects';
-import TEXTURE from '../../textures/wall-texture.jpg'
+import TEXTURE from '../../textures/wall-texture-2.jpg'
 
 //-----CURVES----------------------------------------------------------------------------------
 
@@ -92,8 +92,8 @@ class Tube extends Group {
         
         var material = new MeshPhongMaterial({color: 0x330c0c, flatShading: false,});
         var texture = new TextureLoader().load(TEXTURE);
-        texture.wrapS = RepeatWrapping;
-        texture.wrapT = RepeatWrapping;
+        texture.wrapS = MirroredRepeatWrapping;
+        texture.wrapT = MirroredRepeatWrapping;
         material.map = texture;
         material.side = BackSide;
 
@@ -179,8 +179,8 @@ class Tube extends Group {
         // add new tube
         var material = new MeshPhongMaterial({color: 0x330c0c, flatShading: false,});
         var texture = new TextureLoader().load(TEXTURE);
-        texture.wrapS = RepeatWrapping;
-        texture.wrapT = RepeatWrapping;
+        texture.wrapS = MirroredRepeatWrapping;
+        texture.wrapT = MirroredRepeatWrapping;
         material.map = texture;
         material.side = BackSide;
 

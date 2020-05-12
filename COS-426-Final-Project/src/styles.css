@@ -1,6 +1,12 @@
 body{
   position: relative;
 }
+
+img.resize {
+  width:70px;
+  height:70px;
+}
+
 #startmenu {
     display: none;
 }
@@ -21,6 +27,9 @@ body{
     font-size: 4vh;
     margin-top: -2vh;
 }
+.description {
+    font-size: 5vh;
+}
 .overlay {
     position: absolute;
     left: 0;
@@ -35,7 +44,7 @@ body{
 }
 
 .overlaybg {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 #endmenu {
