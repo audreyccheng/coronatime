@@ -153,10 +153,6 @@ const onAnimationFrameHandler = (timeStamp) => {
     // 	scene.addRedCells(0);
     // }
 
-<<<<<<< HEAD
-    const curSpeed = 0.06;
-=======
->>>>>>> 649c25bc5b5795f1b86d5ab4db1c7b81907596eb
     const curve = scene.tube.curves[0];
     const length = curve.getLength();
 
