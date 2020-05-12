@@ -197,8 +197,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         let virus = scene.tube.viruses[i];
         var vpos = virus.position.clone();
         vpos.z += 7;
-        var vToSphere = Math.sqrt((vpos.x - scene.sphere.position.x) ** 2) + ((vpos.y - scene.sphere.position.y) ** 2) + ((vpos.z - scene.sphere.position.z) ** 2);
-    	if (vToSphere < S_RADIUS + V_RADIUS - 0.08 &&  Math.abs(scene.sphere.position.z - vpos.z) < 0.08) {
+        if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + V_RADIUS - 0.08 && Math.abs(scene.sphere.position.z - vpos.z) < 0.08) {
     		scene.tube.removeVirus(i);
     		scene.addVirusCount();
             if (!showMenu && !endedGame && soundOn) {
@@ -216,8 +215,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         let clot = scene.tube.clots[i];
         var cpos = clot.position.clone();
         cpos.z += 7;
-        var cToSphere = Math.sqrt((cpos.x - scene.sphere.position.x) ** 2) + ((cpos.y - scene.sphere.position.y) ** 2) + ((cpos.z - scene.sphere.position.z) ** 2);
-    	if (cToSphere < S_RADIUS + clot.radius - 0.1) {
+    	if (cpos.distanceTo(scene.sphere.position) < S_RADIUS + clot.radius - 0.1) {
             if (!showMenu) {
                 endGame();
             }
@@ -229,6 +227,18 @@ const onAnimationFrameHandler = (timeStamp) => {
                     sound.play();
                 });
             }
+    	}
+    }
+    // redcell collision detection
+    for (let i = 0; i < scene.tube.nredcells[0] + scene.tube.nredcells[1]; i++) {
+        let redcell = scene.tube.redcells[i];
+        var rpos = redcell.position.clone();
+        rpos.z += 7;
+        if (rpos.distanceTo(scene.sphere.position) < redcell.radius + V_RADIUS + 0.08) {
+            rpos.sub(scene.sphere.position);
+            redcell.position.x += rpos.x;
+            redcell.position.y += rpos.y;
+            redcell.position.z += rpos.z;
     	}
     }
 

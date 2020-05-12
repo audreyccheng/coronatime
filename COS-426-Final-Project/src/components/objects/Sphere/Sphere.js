@@ -28,13 +28,7 @@ class Sphere extends Group {
         mesh.rotation.y += Math.PI / 3;
         mesh.rotation.z += Math.PI / 3;
 
-        // Init state
-        this.state = {
-            pos: zBeginning,
-        };
-
-        this.position.set(0, 0, 7)
-        // this.position.z += zBeginning;
+        this.position.set(0, 0, zBeginning)
         this.name = 'sphere';
         this.add(mesh);
         this.velocity = new Vector3();

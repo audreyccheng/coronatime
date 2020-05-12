@@ -11,7 +11,7 @@ class Clot extends Group {
         var texture = new TextureLoader().load(TEXTURE);
         material.map = texture;
 
-        const radius = Math.random()* 0.19 + 0.01;
+        const radius = Math.random()* 0.16 + 0.01;
         const tubeRadius =  radius * 2;  
         const radialSegments = 20;  
         const tubularSegments =  30;  

@@ -8,13 +8,6 @@ class SeedScene extends Scene {
         // Call parent Scene() constructor
         super();
 
-        // Init state
-        this.state = {
-            // gui: new Dat.GUI(), // Create GUI for scene
-            // rotationSpeed: 1,
-            // updateList: [],
-        };
-
         // Set background to a nice color
         this.background = new Color(0x0);
 
@@ -32,10 +25,6 @@ class SeedScene extends Scene {
         // this.redcells.forEach(obj => this.add(obj));
         // this.viruses.forEach(obj => this.add(obj));
         this.add(this.lights, this.sphere, this.tube);
-
-
-        // Populate GUI
-        // this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
     }
 
     addVirusCount() {
