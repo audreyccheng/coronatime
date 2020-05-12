@@ -1,5 +1,5 @@
 import { Group } from 'three';
-import { TorusBufferGeometry, MeshPhongMaterial, Mesh, BackSide } from "three";
+import { TorusBufferGeometry, MeshPhongMaterial, Mesh, Vector3 } from "three";
 
 const CELL_RADIUS = 0.05;
 const TUBE_RADIUS = 0.04;
@@ -12,8 +12,6 @@ const RC_GEOMETRY = new TorusBufferGeometry(
     RADIAL_SEGMENTS,
     TUBULAR_SEGMENTS,
 );
-
-const DRAG = 0.9;
 
 class RedCell extends Group {
     constructor(pos, rot) {
