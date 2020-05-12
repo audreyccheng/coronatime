@@ -2,6 +2,7 @@ import * as Dat from 'dat.gui';
 import { Scene, Color, Vector3, FontLoader, MeshPhongMaterial, Mesh, TextGeometry } from 'three';
 import { Sphere, RedCell, V_RADIUS, Tube, Virus } from 'objects';
 import { BasicLights } from 'lights';
+import Antibody from '../objects/Antibody/Antibody';
 
 class SeedScene extends Scene {
     constructor() {
@@ -15,15 +16,6 @@ class SeedScene extends Scene {
         this.tube = new Tube(new Vector3(0,0,7));
         this.sphere = new Sphere(7);
         this.lights = new BasicLights();
-        // this.viruses = [new Virus(getRandomVirusPos(6))];
-        // this.redcells = [new RedCell(new Vector3(0.4,0.3,-3), 0.2), 
-        //     new RedCell(new Vector3(0.5,0.6,-2.8), 0.25), 
-        //     new RedCell(new Vector3(0.2,0.7,-3.3), 0.16),
-        //     new RedCell(new Vector3(-0.5,-0.5,6-3.5), 0.19),
-        //     new RedCell(new Vector3(-0.6,0.6,-2.6), 0.23),
-        // ]
-        // this.redcells.forEach(obj => this.add(obj));
-        // this.viruses.forEach(obj => this.add(obj));
         this.add(this.lights, this.sphere, this.tube);
     }
 

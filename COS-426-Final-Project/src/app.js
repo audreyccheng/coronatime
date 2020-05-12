@@ -118,7 +118,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     scene.update && scene.update(timeStamp);
     window.requestAnimationFrame(onAnimationFrameHandler);
 
-    if (curTubeDist >=1 && tubeRemove !== -1) {
+    if (curTubeDist >= 1.2 && tubeRemove !== -1) {
         scene.tube.remove(tubeRemove);
         scene.tube.removeObjs();
         tubeRemove = -1;
@@ -161,24 +161,20 @@ const onAnimationFrameHandler = (timeStamp) => {
         obj.position.y += vecMove.y;
         obj.position.z += vecMove.z;
     });
-    const virusSpeed = 0.01;
     [...scene.tube.viruses].forEach(obj => {
         obj.position.x += vecMove.x;
         obj.position.y += vecMove.y;
         obj.position.z += vecMove.z;
-        // obj.position.z += curSpeed;
-        // obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * virusSpeed;
-        // obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * virusSpeed;
     });
-
-    const redCellSpeed = 0.2;
     [...scene.tube.redcells].forEach(obj => {
         obj.position.x += vecMove.x;
         obj.position.y += vecMove.y;
         obj.position.z += vecMove.z;
-        // obj.position.z += curSpeed * redCellSpeed;
-        // obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
-        // obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
+    });
+    [...scene.tube.antibodies].forEach(obj => {
+        obj.position.x += vecMove.x;
+        obj.position.y += vecMove.y;
+        obj.position.z += vecMove.z;
     });
 
     currentScore.textContent = `${scene.virusCount}`;
@@ -197,7 +193,8 @@ const onAnimationFrameHandler = (timeStamp) => {
         let virus = scene.tube.viruses[i];
         var vpos = virus.position.clone();
         vpos.z += 7;
-        if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + V_RADIUS - 0.08 && Math.abs(scene.sphere.position.z - vpos.z) < 0.08) {
+        //&& Math.abs(scene.sphere.position.z - vpos.z) < 0.095
+        if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + V_RADIUS) {
     		scene.tube.removeVirus(i);
     		scene.addVirusCount();
             if (!showMenu && !endedGame && soundOn) {
@@ -231,15 +228,14 @@ const onAnimationFrameHandler = (timeStamp) => {
     }
     // redcell collision detection
     for (let i = 0; i < scene.tube.nredcells[0] + scene.tube.nredcells[1]; i++) {
-        let redcell = scene.tube.redcells[i];
-        var rpos = redcell.position.clone();
+        let rc = scene.tube.redcells[i];
+        var rpos = rc.position.clone();
         rpos.z += 7;
-        if (rpos.distanceTo(scene.sphere.position) < redcell.radius + V_RADIUS + 0.08) {
+        // if a red cell gets too close, move it away from the sphere
+        if (rpos.distanceTo(scene.sphere.position) < rc.radius + V_RADIUS + 0.1) {
             rpos.sub(scene.sphere.position);
-            redcell.position.x += rpos.x;
-            redcell.position.y += rpos.y;
-            redcell.position.z += rpos.z;
-    	}
+            rc.position.add(rpos.multiplyScalar(0.1));
+        }
     }
 
     let spherePos = scene.sphere.position.clone().setZ(0);
