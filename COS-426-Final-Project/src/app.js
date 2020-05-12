@@ -86,9 +86,11 @@ let highScore = 0;
 
 let netForce = new Vector3(0, 0, 0);
 let forceApplied = false;
-let startSpeed = 0.05;
-let curSpeed = 0.05;
+let startSpeed = 0.03;
+let curSpeed = 0.03;
 let maxSpeed = 0.15;
+let speedUp = 0.00005;
+let antiSlowDown = 0.03;
 
 const startGame = event => {
     if (!showMenu) {
@@ -149,7 +151,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     }
 
     if (curSpeed < maxSpeed) {
-        curSpeed += 0.00007;
+        curSpeed += speedUp;
     }
 
     // while (scene.viruses[0] && scene.viruses[0].position.z > camera.position.z + C_HEIGHT/2) {
@@ -269,6 +271,9 @@ const onAnimationFrameHandler = (timeStamp) => {
     // antibody collision detection
     for (let i = 0; i < scene.tube.nantibodies[0] + scene.tube.nantibodies[1]; i++) {
         let anti = scene.tube.antibodies[i];
+        if (anti === undefined) {
+            continue;
+        }
         var apos = anti.position.clone();
         apos.z += 7;
         // apply power up if collision with antibody
@@ -277,10 +282,16 @@ const onAnimationFrameHandler = (timeStamp) => {
                 // invincibility powerup
                 scene.sphere.invincible = true;
                 invincibleDistance = 0;
-                bloomPass.strength = 1.0;
+                bloomPass.strength = 2.0;
             } else if (anti.type == 'speed') { 
                 // speed powerup
+                if (curSpeed - antiSlowDown > startSpeed) {
+                    curSpeed -= antiSlowDown
+                } else {
+                    curSpeed = startSpeed;
+                }
             }
+            scene.tube.removeAntibody(i);
         }
     }
 

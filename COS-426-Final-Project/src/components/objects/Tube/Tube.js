@@ -293,6 +293,11 @@ class Tube extends Group {
         this.viruses.splice(index, 1);
     }
 
+    removeAntibody(index) {
+        this.remove(this.antibodies[index]);
+        this.antibodies.splice(index, 1);
+    }
+
     removeObjs() {
         // shift clots
         for (var i = 0; i < this.nclots[0]; i++) {
