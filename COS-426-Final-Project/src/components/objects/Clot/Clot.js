@@ -9,17 +9,16 @@ class Clot extends Group {
 
         const material = new MeshPhongMaterial({color: 0x300c0c, flatShading: false,})
         var texture = new TextureLoader().load(TEXTURE);
-        texture.wrapS = RepeatWrapping;
-        texture.wrapT = RepeatWrapping;
         material.map = texture;
 
-        const radius = Math.random()* 0.2 + 0.01;
-        const tubeRadius =  radius;  
+        const radius = Math.random()* 0.16 + 0.01;
+        const tubeRadius =  radius * 2;  
         const radialSegments = 20;  
         const tubularSegments =  30;  
         const p =  1; 
         const q =  3;  
         const geometry = new TorusKnotBufferGeometry(radius, tubeRadius, tubularSegments, radialSegments, p, q);
+        geometry.computeBoundingSphere();
         const mesh = new Mesh(geometry, material);
         // this.meshes = []
         // for (var i = 0; i < 3; i++) {
@@ -58,11 +57,11 @@ class Clot extends Group {
         //rcells.forEach(obj => this.add(obj));
         this.rotation.x = Math.random() * Math.PI * 2;
         this.rotation.y = Math.random() * Math.PI * 2;
-        this.rotation.z = Math.random() * Math.PI * 2;
-        this.radius = radius;
-        this.position.x = pos.x + (Math.random()*2 - 1) * 0.5;
-        this.position.y = pos.y + (Math.random()*2 - 1) * 0.5;
-        this.position.z = pos.z + (Math.random()*2 - 1) * 0.5;
+        this.rotation.z = Math.random() * Math.PI * 2;   
+        this.radius = geometry.boundingSphere.radius;
+        this.position.x = pos.x;
+        this.position.y = pos.y;
+        this.position.z = pos.z;
         this.name = 'clot';
         this.add(mesh);
     }

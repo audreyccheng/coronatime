@@ -9,6 +9,8 @@ const S_GEOMETRY = new SphereGeometry (
 );
 const DRAG = 0.9;
 
+export {S_RADIUS};
+
 class Sphere extends Group {
     constructor(zBeginning) {
         // Call parent Group() constructor
@@ -26,13 +28,7 @@ class Sphere extends Group {
         mesh.rotation.y += Math.PI / 3;
         mesh.rotation.z += Math.PI / 3;
 
-        // Init state
-        this.state = {
-            pos: zBeginning,
-        };
-
-        this.position.set(0, 0, 7)
-        // this.position.z += zBeginning;
+        this.position.set(0, 0, zBeginning)
         this.name = 'sphere';
         this.add(mesh);
         this.velocity = new Vector3();
@@ -50,7 +46,7 @@ class Sphere extends Group {
     	this.position.x += this.velocity.x;
     	this.position.y += this.velocity.y;
 
-    	const cynLimit = 1 - S_RADIUS/2 - 0.05;
+    	const cynLimit = 1 - S_RADIUS/2 - 0.1;
 
     	if (Math.sqrt(this.position.x*this.position.x + this.position.y*this.position.y) > cynLimit) {
     		let theta = Math.atan(this.position.y/this.position.x);

@@ -15,6 +15,7 @@ import { RenderPass } from '../node_modules/three/examples/jsm/postprocessing/Re
 import { GlitchPass } from '../node_modules/three/examples/jsm/postprocessing/GlitchPass.js';
 import { UnrealBloomPass } from '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { Color } from '../node_modules/three/build/three.module.js';
+import './styles.css';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -24,14 +25,10 @@ const renderer = new WebGLRenderer({ antialias: true });
 var renderScene = new RenderPass(scene, camera);
 var composer = new EffectComposer( renderer );
 
-var bloomStrength = 0.7;
+var bloomStrength = 0.5;
 var bloomRadius = 0.5;
-var bloomThreshold = 0.08;
-
+var bloomThreshold = 0.4;
 var bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), bloomStrength, bloomRadius, bloomThreshold);
-bloomPass.radius = 0.5;
-bloomPass.clearColor = new Color(0xffffff);
-
 
 composer.setSize(window.innerWidth, window.innerHeight);
 composer.addPass(renderScene);
@@ -123,15 +120,16 @@ const onAnimationFrameHandler = (timeStamp) => {
 
     if (curTubeDist >=1 && tubeRemove !== -1) {
         scene.tube.remove(tubeRemove);
+        scene.tube.removeObjs();
         tubeRemove = -1;
     }
 
-    while (scene.viruses[0] && scene.viruses[0].position.z > camera.position.z + C_HEIGHT/2) {
-    	scene.addViruses(0);
-    }
-    while (scene.redcells[0] && scene.redcells[0].position.z > camera.position.z + C_HEIGHT/2) {
-    	scene.addRedCells(0);
-    }
+    // while (scene.viruses[0] && scene.viruses[0].position.z > camera.position.z + C_HEIGHT/2) {
+    // 	scene.addViruses(0);
+    // }
+    // while (scene.redcells[0] && scene.redcells[0].position.z > camera.position.z + C_HEIGHT/2) {
+    // 	scene.addRedCells(0);
+    // }
 
     const curSpeed = 0.1;
     const curve = scene.tube.curves[0];
@@ -151,6 +149,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         scene.tube.rotateY(angle - prevAngle);
     }
     prevAngle = angle;
+    roundDistance += curSpeed;
 
     [...scene.tube.meshes].forEach(obj => {
         obj.position.x += vecMove.x;
@@ -162,40 +161,44 @@ const onAnimationFrameHandler = (timeStamp) => {
         obj.position.y += vecMove.y;
         obj.position.z += vecMove.z;
     });
-
-    roundDistance += curSpeed;
-
     const virusSpeed = 0.01;
-    [...scene.viruses].forEach(obj => {
-        obj.position.z += curSpeed;
-        obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * virusSpeed;
-        obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * virusSpeed;
+    [...scene.tube.viruses].forEach(obj => {
+        obj.position.x += vecMove.x;
+        obj.position.y += vecMove.y;
+        obj.position.z += vecMove.z;
+        // obj.position.z += curSpeed;
+        // obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * virusSpeed;
+        // obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * virusSpeed;
     });
 
     const redCellSpeed = 0.2;
-    [...scene.redcells].forEach(obj => {
-        obj.position.z += curSpeed * redCellSpeed;
-        obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
-        obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
+    [...scene.tube.redcells].forEach(obj => {
+        obj.position.x += vecMove.x;
+        obj.position.y += vecMove.y;
+        obj.position.z += vecMove.z;
+        // obj.position.z += curSpeed * redCellSpeed;
+        // obj.position.x += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
+        // obj.position.y += curSpeed * (Math.random() * 2.0 - 1.0) * redCellSpeed;
     });
 
     currentScore.textContent = `${scene.virusCount}`;
 
-    scene.simulate();
+    scene.simulate(); // simulate sphere position
 
-    if (curTubeDist >= length) {
+    if (curTubeDist >= length) { // if we have moved farther than current tube, remove tube and move to next
         curTubeDist = 0;
         prevAngle = 0;
         tubeRemove = scene.tube.meshes[0];
         scene.tube.addTube();
     }
 
-    for (let i = 0; i < scene.viruses.length; i++) {
-    	let virus = scene.viruses[i];
-    	const S_RADIUS = 0.1;
-        var vToSphere = Math.sqrt((virus.position.x - scene.sphere.position.x) ** 2) + ((virus.position.y - scene.sphere.position.y) ** 2) + ((virus.position.z - scene.sphere.position.z) ** 2);
-    	if (vToSphere < S_RADIUS + V_RADIUS - 0.1 &&  Math.abs(scene.sphere.position.z - virus.position.z) < 0.1) {
-    		scene.addViruses(i);
+    // virus collision detection
+    for (let i = 0; i < scene.tube.nviruses[0] + scene.tube.nviruses[1]; i++) {
+        let virus = scene.tube.viruses[i];
+        var vpos = virus.position.clone();
+        vpos.z += 7;
+        if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + V_RADIUS - 0.08 && Math.abs(scene.sphere.position.z - vpos.z) < 0.08) {
+    		scene.tube.removeVirus(i);
     		scene.addVirusCount();
             if (!showMenu && !endedGame && soundOn) {
                 audioLoader2.load( './src/components/sounds/squish.mp3', function( buffer ) {
@@ -207,12 +210,12 @@ const onAnimationFrameHandler = (timeStamp) => {
             }
     	}
     }
-
-    for (let i = 0; i < scene.tube.clots.length; i++) {
-    	let clot = scene.tube.clots[i];
-    	const S_RADIUS = 0.1;
-        var cToSphere = Math.sqrt((clot.position.x - scene.sphere.position.x) ** 2) + ((clot.position.y - scene.sphere.position.y) ** 2) + ((clot.position.z - scene.sphere.position.z) ** 2);
-    	if (cToSphere < S_RADIUS + clot.radius) {
+    // clot collision detection
+    for (let i = 0; i < scene.tube.nclots[0] + scene.tube.nclots[1]; i++) {
+        let clot = scene.tube.clots[i];
+        var cpos = clot.position.clone();
+        cpos.z += 7;
+    	if (cpos.distanceTo(scene.sphere.position) < S_RADIUS + clot.radius - 0.1) {
             if (!showMenu) {
                 endGame();
             }
@@ -224,6 +227,18 @@ const onAnimationFrameHandler = (timeStamp) => {
                     sound.play();
                 });
             }
+    	}
+    }
+    // redcell collision detection
+    for (let i = 0; i < scene.tube.nredcells[0] + scene.tube.nredcells[1]; i++) {
+        let redcell = scene.tube.redcells[i];
+        var rpos = redcell.position.clone();
+        rpos.z += 7;
+        if (rpos.distanceTo(scene.sphere.position) < redcell.radius + V_RADIUS + 0.08) {
+            rpos.sub(scene.sphere.position);
+            redcell.position.x += rpos.x;
+            redcell.position.y += rpos.y;
+            redcell.position.z += rpos.z;
     	}
     }
 
