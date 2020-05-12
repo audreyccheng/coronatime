@@ -239,14 +239,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         let clot = scene.tube.clots[i];
         var cpos = clot.position.clone();
         cpos.z += 7;
-<<<<<<< HEAD
     	if (cpos.distanceTo(scene.sphere.position) < S_RADIUS + clot.radius - 0.1 && scene.sphere.invincible == false) {
-            if (!showMenu) {
-                endGame();
-            }
-=======
-    	if (cpos.distanceTo(scene.sphere.position) < S_RADIUS + clot.radius - 0.1) {
->>>>>>> 649c25bc5b5795f1b86d5ab4db1c7b81907596eb
             if (!showMenu && !endedGame && soundOn) {
                 audioLoader2.load(BC_SOUND, function( buffer ) {
                     sound.setBuffer( buffer );
