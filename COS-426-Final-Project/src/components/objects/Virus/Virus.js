@@ -20,12 +20,14 @@ class Virus extends Group {
 
         const material = new MeshPhongMaterial({color: 0x01680C, flatShading: false,});
 
+        // body of the virus is a sphere
         const body_geometry = new SphereGeometry(
             this.radius * 0.75,
             S_SEGMENTS,
             S_SEGMENTS,
         );
-        const body = new Mesh(body_geometry, material);
+        const body = new Mesh(body_geometry, material); 
+        this.meshes = [body];
         
         // randomly & uniformly sample from surface of sphere to get position of spikes 
         const N = 6;
@@ -51,12 +53,21 @@ class Virus extends Group {
                 spike.rotateX(Math.PI);
                 
                 spikes.push(spike);
+                this.meshes.push(spike);
             }
         } 
         
         this.name = 'redcell';
         this.add(body);
-        spikes.forEach(obj => this.add(obj));
+        spikes.forEach(obj => this.add(obj)); // add spikes to stick out of the sphere body
+    }
+
+    trashDispose() {
+        this.meshes.forEach(obj => {
+            obj.geometry.dispose();
+            obj.material.dispose();
+         }
+        );
     }
 }
 

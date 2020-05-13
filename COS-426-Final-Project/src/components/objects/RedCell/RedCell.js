@@ -1,5 +1,5 @@
 import { Group } from 'three';
-import { TorusBufferGeometry, MeshPhongMaterial, Mesh, Vector3 } from "three";
+import { TorusBufferGeometry, MeshPhongMaterial, Mesh } from "three";
 
 const CELL_RADIUS = 0.05;
 const TUBE_RADIUS = 0.04;
@@ -24,12 +24,18 @@ class RedCell extends Group {
         mesh.rotation.x += 2 * Math.PI * rot;
         geometry.computeBoundingSphere();
 
+        this.mesh = mesh;
         this.radius = geometry.boundingSphere.radius;
         this.position.x = pos.x;
         this.position.y = pos.y;
         this.position.z = pos.z;
         this.name = 'redcell';
         this.add(mesh);
+    }
+
+    trashDispose() {
+        this.mesh.geometry.dispose();
+        this.mesh.material.dispose();
     }
 }
 

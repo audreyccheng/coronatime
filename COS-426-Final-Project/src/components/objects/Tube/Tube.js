@@ -1,5 +1,5 @@
 import { Group, Curve } from 'three';
-import { TubeBufferGeometry, MeshPhongMaterial, Mesh, BackSide, Vector3, TextureLoader, RepeatWrapping, MirroredRepeatWrapping } from 'three';
+import { TubeBufferGeometry, MeshPhongMaterial, Mesh, BackSide, Vector3, TextureLoader, MirroredRepeatWrapping } from 'three';
 import { Clot, Virus, RedCell, Antibody } from 'objects';
 import TEXTURE from '../../textures/wall-texture-2.jpg'
 
@@ -100,17 +100,18 @@ class Tube extends Group {
         var path = new RightCurve(CURVED_SCALE, 2.0);
         this.left = [false];
         var geometry = new TubeBufferGeometry(path, TUBE_SEGMENTS, T_RADIUS, RAD_SEGMENTS, CLOSED);
-        this.meshes = [new Mesh(geometry, material)];
-        this.curves = [path];
-        this.rotations = [0];
+        this.meshes = [new Mesh(geometry, material)]; // stores tube segments
+        this.curves = [path]; // stores curve corresponding to each tube segment
+        this.rotations = [0]; // stores rotation corresponding to each tube segmennt
         this.clots = [];
         this.viruses = [];
         this.redcells = [];
         this.antibodies = [];
-        this.nclots = [];
-        this.nviruses = [];
-        this.nredcells = [];
-        this.nantibodies = [];
+        this.nclots = []; // stores the number of clots in each tube segment i
+        this.nviruses = []; // stores the number of viruses in each tube segment i
+        this.nredcells = []; // stores the number of red cells in each tube segment i
+        this.nantibodies = []; // stores the number of nantibodies in each tube segment i
+
         // add blood clot obstacles, viruses, and red blood cells to first tube path
         this.addClots(path, new Vector3(0,0,0));
         this.addViruses(path, new Vector3(0,0,0));
@@ -165,7 +166,6 @@ class Tube extends Group {
         this.position.z += startPos.z;
         this.name = 'tube';
         this.meshes.forEach(obj => this.add(obj));
-        this.clots.forEach(obj => this.add(obj));
     }
 
     // tube.meshes[0] gets removed in scene once it is out of view, for now shift arrays and add tube/objects
@@ -230,8 +230,7 @@ class Tube extends Group {
         const numClots = Math.ceil(Math.random() * 3 + 1);
         this.nclots.push(numClots);
         for (var i = 0; i < numClots; i++) {
-            var pos = newPath.getPoint(Math.random());
-            //cpos.applyAxisAngle(new Vector3(0,1,0), -1.0 * angle);
+            var pos = newPath.getPoint(Math.random()); // find random position in the provided tube segment
             pos.add(prevTubeEnd);
             pos.x += (Math.random()*2 - 1) * 0.5;
             pos.y += (Math.random()*2 - 1) * 0.5;
@@ -245,7 +244,7 @@ class Tube extends Group {
         const numViruses = Math.ceil(Math.random() * 10 + 5);
         this.nviruses.push(numViruses);
         for (var i = 0; i < numViruses; i++) {
-            var pos = newPath.getPoint(Math.random());
+            var pos = newPath.getPoint(Math.random()); // find random position in the provided tube segment
             pos.add(prevTubeEnd);
             pos.x += (Math.random()*2 - 1) * 0.7;
             pos.y += (Math.random()*2 - 1) * 0.7;
@@ -259,7 +258,7 @@ class Tube extends Group {
         const numRC = Math.ceil(Math.random() * 7 + 3);
         this.nredcells.push(numRC);
         for (var i = 0; i < numRC; i++) {
-            var pos = newPath.getPoint(Math.random());
+            var pos = newPath.getPoint(Math.random()); // find random position in the provided tube segment
             pos.add(prevTubeEnd);
             pos.x += (Math.random()*2 - 1) * 0.7;
             pos.y += (Math.random()*2 - 1) * 0.7;
@@ -273,7 +272,7 @@ class Tube extends Group {
         const numAntibodies = Math.ceil(Math.random() * 3 + 2);
         this.nantibodies.push(numAntibodies);
         for (var i = 0; i < numAntibodies; i++) {
-            var pos = newPath.getPoint(Math.random());
+            var pos = newPath.getPoint(Math.random()); // find random position in the provided tube segment
             pos.add(prevTubeEnd);
             pos.x += (Math.random()*2 - 1) * 0.6;
             pos.y += (Math.random()*2 - 1) * 0.6;
@@ -294,6 +293,7 @@ class Tube extends Group {
         } else {
             this.nviruses[1] = this.nviruses[1] - 1;
         }
+        this.viruses[index].trashDispose();
         this.remove(this.viruses[index]);
         this.viruses.splice(index, 1);
     }
@@ -304,31 +304,36 @@ class Tube extends Group {
         } else {
             this.nantibodies[1] = this.nantibodies[1] - 1;
         }
+        this.antibodies[index].trashDispose();
         this.remove(this.antibodies[index]);
         this.antibodies.splice(index, 1);
     }
 
     removeObjs() {
-        // shift clots
+        // remove clots
         for (var i = 0; i < this.nclots[0]; i++) {
+            this.clots[0].trashDispose();
             this.remove(this.clots[0])
             this.clots.shift();
         }
         this.nclots.shift();
-        // shift viruses
+        // remove viruses
         for (var i = 0; i < this.nviruses[0]; i++) {
+            this.viruses[0].trashDispose();
             this.remove(this.viruses[0]);
             this.viruses.shift();
         }
         this.nviruses.shift();
-        // shift red cells
+        // remove red cells
         for (var i = 0; i < this.nredcells[0]; i++) {
+            this.redcells[0].trashDispose();
             this.remove(this.redcells[0]);
             this.redcells.shift();
         }
         this.nredcells.shift();
-        // shift antibodies
+        // remove antibodies
         for (var i = 0; i < this.nantibodies[0]; i++) {
+            this.antibodies[0].trashDispose();
             this.remove(this.antibodies[0]);
             this.antibodies.shift();
         }
