@@ -50,32 +50,22 @@ document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
-// var btn = document.createElement("BUTTON");   // Create a <button> element
-// btn.innerHTML = "CLICK ME";                   // Insert text
-// document.body.appendChild(btn); 
-
-// Set up controls
-// const controls = new OrbitControls(camera, canvas);
-// controls.enableDamping = true;
-// controls.enablePan = false;
-// controls.minDistance = 4;
-// controls.maxDistance = 16;
-// controls.update();
-
+// add audio
 var listener = new AudioListener();
 camera.add( listener );
 var sound = new Audio( listener );
 var audioLoader = new AudioLoader();
-var audioLoader2 = new AudioLoader();
+let soundOn = false;
 
-let invincibleDistance = 0;
-
+// tube variables
 let tubeRemove = -1;
 let curTubeDist = 0;
 let prevAngle = 0;
 
+// html objects
 let showMenu = false;
 let endedGame = false;
+let highScore = 0;
 const startmenu = document.getElementById("startmenu");
 const currentScore = document.getElementById("currentscore");
 const scoreMenu = document.getElementById("scoremenu");
@@ -83,17 +73,17 @@ const endmenu = document.getElementById("endmenu");
 const endScore = document.getElementById("endscore");
 const bestScore = document.getElementById("bestscore");
 
-let soundOn = false;
-let highScore = 0;
-
+// speed and movement variables
 let netForce = new Vector3(0, 0, 0);
 let forceApplied = false;
 let startSpeed = 0.03;
 let curSpeed = 0.03;
-let maxSpeed = 0.15;
-let speedUp = 0.00005;
+let maxSpeed = 0.13;
+let speedUp = 0.00002;
 let antiSlowDown = 0.03;
+let invincibleDistance = 0;
 
+// determine if start menu should be displayed
 const startGame = event => {
     if (!showMenu) {
         startmenu.classList.add("started");
@@ -107,6 +97,7 @@ const startGame = event => {
     }
 };
 
+// display end menu
 function endGame() {
     endmenu.classList.add("ended");
     endScore.textContent = `${scene.virusCount}`;
@@ -117,13 +108,8 @@ function endGame() {
     endedGame = true;
     scoremenu.classList.remove("started");
     curSpeed =  startSpeed;
+    // play theme song
     if (soundOn) {
-        audioLoader2.load(BC_SOUND, function( buffer ) {
-                    sound.setBuffer( buffer );
-                    sound.setLoop(false);
-                    sound.setVolume(0.4);
-                    sound.play();
-                });
         audioLoader.load(OJSONG, function( buffer ) {
             sound.setBuffer( buffer );
             sound.setLoop(true);
@@ -162,13 +148,6 @@ const onAnimationFrameHandler = (timeStamp) => {
         curSpeed += speedUp;
     }
 
-    // while (scene.viruses[0] && scene.viruses[0].position.z > camera.position.z + C_HEIGHT/2) {
-    // 	scene.addViruses(0);
-    // }
-    // while (scene.redcells[0] && scene.redcells[0].position.z > camera.position.z + C_HEIGHT/2) {
-    // 	scene.addRedCells(0);
-    // }
-
     const curve = scene.tube.curves[0];
     const length = curve.getLength();
 
@@ -190,6 +169,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         invincibleDistance += curSpeed;
     }
     
+    // update positions for objects in the scene
     [...scene.tube.meshes].forEach(obj => {
         obj.position.x += vecMove.x;
         obj.position.y += vecMove.y;
@@ -236,8 +216,9 @@ const onAnimationFrameHandler = (timeStamp) => {
         if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + virus.radius + 0.01) {
     		scene.tube.removeVirus(i);
     		scene.addVirusCount();
+            // sound effect
             if (!showMenu && !endedGame && soundOn) {
-                audioLoader2.load(VIRUS_SOUND, function( buffer ) {
+                audioLoader.load(VIRUS_SOUND, function( buffer ) {
                     sound.setBuffer( buffer );
                     sound.setLoop(false);
                     sound.setVolume(0.4);
@@ -283,8 +264,9 @@ const onAnimationFrameHandler = (timeStamp) => {
                 scene.sphere.invincible = true;
                 invincibleDistance = 0;
                 bloomPass.strength = 2.0;
+                // sound effect
                 if (!showMenu && !endedGame && soundOn) {
-                    audioLoader2.load(A1_SOUND, function( buffer ) {
+                    audioLoader.load(A1_SOUND, function( buffer ) {
                         sound.setBuffer( buffer );
                         sound.setLoop(false);
                         sound.setVolume(0.4);
@@ -298,8 +280,9 @@ const onAnimationFrameHandler = (timeStamp) => {
                 } else {
                     curSpeed = startSpeed;
                 }
+                // sound effect
                 if (!showMenu && !endedGame && soundOn) {
-                    audioLoader2.load(A2_SOUND, function( buffer ) {
+                    audioLoader.load(A2_SOUND, function( buffer ) {
                         sound.setBuffer( buffer );
                         sound.setLoop(false);
                         sound.setVolume(0.4);
@@ -338,6 +321,7 @@ window.addEventListener('resize', windowResizeHandler, false);
 window.addEventListener("keydown", handleImpactEvents, false);
 window.addEventListener("keyup", handleReleaseEvents, false);
 
+// stop applying force on player
 function handleReleaseEvents(event) {
     forceApplied = false;
 }
@@ -377,12 +361,6 @@ function handleImpactEvents(event) {
             }
         }
     }
-
-    // end game
-    // if (event.key == "q" && !showMenu) {
-    //     endGame();
-    //     return;
-    // }
 
     // return to start menu after game ends
     if (endedGame && event.key == "s") {
@@ -426,16 +404,9 @@ function handleImpactEvents(event) {
         return;
     }
 
-    // const scale = 30; // the magnitude of the offset produced by this impact
-
     // check only for bound keys
     if (event.key != "ArrowUp" && event.key != "ArrowDown" && event.key != "ArrowLeft"
-      && event.key != "ArrowRight" && event.key != "Enter") {
-        return;
-    }
-
-    if (event.key == "Enter") {
-        // SceneParams.GRAVITY = -1.0 * SceneParams.GRAVITY;
+      && event.key != "ArrowRight") {
         return;
     }
 
@@ -443,6 +414,5 @@ function handleImpactEvents(event) {
     if (scene.sphere != null) {
         netForce = keyMap[event.key];
         forceApplied = true;
-        // scene.sphere.addForce(keyMap[event.key]);
     }
 }

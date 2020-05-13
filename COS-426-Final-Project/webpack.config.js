@@ -29,16 +29,6 @@ module.exports = {
                 use: 'raw-loader',
                 exclude: path.resolve(__dirname, './node_modules/'),
             },
-            // {
-            //     type: 'javascript/auto',
-            //     test: /\.(json)/,
-            //     exclude: path.resolve(__dirname, './node_modules/'),
-            //     use: [
-            //         {
-            //             loader: 'file-loader',
-            //         },
-            //     ],
-            // },
             {
               test: /\.html$/,
               use: 'html-loader'
@@ -47,10 +37,6 @@ module.exports = {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
             },
-            // {
-            //     test: /\.mp3$/,
-            //     loader: 'file-loader'
-            // }
         ],
     },
     node:
