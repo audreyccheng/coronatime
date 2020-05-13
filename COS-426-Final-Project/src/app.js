@@ -48,10 +48,7 @@ document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
-<<<<<<< HEAD
-=======
 // add audio
->>>>>>> 9a9764d9ec5ea538db652df558c23851fea38b36
 var listener = new AudioListener();
 camera.add( listener );
 var sound = new Audio( listener );
@@ -180,12 +177,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     if (scene.sphere.invincible) { 
         invincibleDistance += curSpeed;
     }
-<<<<<<< HEAD
     // use the movement vector to move all the meshes in the tube object
-=======
-    
-    // update positions for objects in the scene
->>>>>>> 9a9764d9ec5ea538db652df558c23851fea38b36
     [...scene.tube.meshes].forEach(obj => {
         obj.position.x += vecMove.x;
         obj.position.y += vecMove.y;
