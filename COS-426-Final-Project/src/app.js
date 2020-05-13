@@ -75,8 +75,8 @@ const currentSpeed = document.getElementById("currentspeed");
 // speed and movement variables
 let netForce = new Vector3(0, 0, 0);
 let forceApplied = false;
-let startSpeed = 0.03;
-let curSpeed = 0.03;
+let startSpeed = 0.05;
+let curSpeed = 0.05;
 let maxSpeed = 0.13;
 let speedUp = 0.00004;
 let antiSlowDown = 0.03;
