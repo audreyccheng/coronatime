@@ -68,10 +68,11 @@ let endedGame = false;
 let highScore = 0;
 const startmenu = document.getElementById("startmenu");
 const currentScore = document.getElementById("currentscore");
-const scoreMenu = document.getElementById("scoremenu");
-const endmenu = document.getElementById("endmenu");
 const endScore = document.getElementById("endscore");
 const bestScore = document.getElementById("bestscore");
+const scoreMenu = document.getElementById("scoremenu");
+const endmenu = document.getElementById("endmenu");
+const currentSpeed = document.getElementById("currentspeed");
 
 // speed and movement variables
 let netForce = new Vector3(0, 0, 0);
@@ -79,7 +80,7 @@ let forceApplied = false;
 let startSpeed = 0.03;
 let curSpeed = 0.03;
 let maxSpeed = 0.13;
-let speedUp = 0.00002;
+let speedUp = 0.00004;
 let antiSlowDown = 0.03;
 let invincibleDistance = 0;
 
@@ -197,6 +198,8 @@ const onAnimationFrameHandler = (timeStamp) => {
     });
 
     currentScore.textContent = `${scene.virusCount}`;
+    var speedShown = Math.floor(curSpeed*1000)/10;
+    currentSpeed.textContent = `${speedShown.toFixed(1)}`;
 
     scene.simulate(); // simulate sphere position
 

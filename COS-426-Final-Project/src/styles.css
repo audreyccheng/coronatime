@@ -102,8 +102,8 @@ img.sizing {
     bottom: 4vh;
     color: #FFFFFF;
     z-index: 2;
-    text-align: center;
-    font-size: 3vw;
+    text-align: left;
+    font-size: 2vw;
 }
 
 #scoremenu.started {
