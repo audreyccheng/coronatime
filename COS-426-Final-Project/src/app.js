@@ -154,12 +154,8 @@ const onAnimationFrameHandler = (timeStamp) => {
         curSpeed += speedUp;
     }
 
-<<<<<<< HEAD
     // Move/rotate the tube past the player
     const curve = scene.tube.curves[0]; // curve defining the tube segment the player is currently in
-=======
-    const curve = scene.tube.curves[0];
->>>>>>> 9a9764d9ec5ea538db652df558c23851fea38b36
     const length = curve.getLength();
 
     const curPoint = curve.getPoint(curTubeDist/length); // current position of the player in the tube
