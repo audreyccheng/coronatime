@@ -40,14 +40,21 @@ class Antibody extends Group {
         mesh4.position.x -= TUBE_HEIGHT/2 * Math.cos(0.7) + 0.01;
         mesh5.position.x += TUBE_HEIGHT/2 * Math.cos(0.7) + 0.01;
 
-        this.height = TUBE_HEIGHT * Math.sin(0.7) + TUBE_HEIGHT;
-        this.width = TUBE_HEIGHT * Math.cos(0.7) * 2
+        this.meshes = [mesh1, mesh2, mesh3, mesh4, mesh5];
         this.type = type;
         this.position.x = pos.x;
         this.position.y = pos.y;
         this.position.z = pos.z;
         this.name = 'antibody';
         this.add(mesh1, mesh2, mesh3, mesh4, mesh5);
+    }
+
+    trashDispose() {
+        this.meshes.forEach(obj => {
+            obj.geometry.dispose();
+            obj.material.dispose();
+         }
+        );
     }
 }
 

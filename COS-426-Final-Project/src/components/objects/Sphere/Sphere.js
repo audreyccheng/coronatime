@@ -1,5 +1,4 @@
-import { Group, Vector3, PointsMaterial, Points } from 'three';
-import { SphereGeometry, MeshPhongMaterial, Mesh, LineBasicMaterial, LineSegments, EdgesGeometry } from "three";
+import { Group, Vector3, PointsMaterial, Points, SphereGeometry } from 'three';
 
 const S_RADIUS = 0.1;
 const S_GEOMETRY = new SphereGeometry (
@@ -17,12 +16,8 @@ class Sphere extends Group {
         super();
 
         const geometry = S_GEOMETRY;
-        // var geo = new EdgesGeometry( geometry );
-        // const material = new LineBasicMaterial({color: 0xffffff, linewidth: 0 } );
-        // const mesh = new LineSegments(geo, material); 
-        // const material = new MeshPhongMaterial({flatShading: false, opacity: 0.7, transparent: true,});
         const material = new PointsMaterial({ color: 0xFFFFFF, size: 0.005 })
-        const mesh = new Points(geometry, material);//Mesh(geometry, material);
+        const mesh = new Points(geometry, material);
 
         mesh.rotation.x += Math.PI / 3;
         mesh.rotation.y += Math.PI / 3;
@@ -47,8 +42,8 @@ class Sphere extends Group {
     	this.position.x += this.velocity.x;
     	this.position.y += this.velocity.y;
 
+        // make sure the sphere doesn't go past the walls of the tube
     	const cynLimit = 1 - S_RADIUS/2 - 0.1;
-
     	if (Math.sqrt(this.position.x*this.position.x + this.position.y*this.position.y) > cynLimit) {
     		let theta = Math.atan(this.position.y/this.position.x);
     		if (theta !== undefined) {
