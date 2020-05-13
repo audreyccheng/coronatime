@@ -48,20 +48,25 @@ document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
+<<<<<<< HEAD
+=======
+// add audio
+>>>>>>> 9a9764d9ec5ea538db652df558c23851fea38b36
 var listener = new AudioListener();
 camera.add( listener );
 var sound = new Audio( listener );
 var audioLoader = new AudioLoader();
-var audioLoader2 = new AudioLoader();
+let soundOn = false;
 
-let invincibleDistance = 0;
-
+// tube variables
 let tubeRemove = -1;
 let curTubeDist = 0;
 let prevAngle = 0;
 
+// html objects
 let showMenu = false;
 let endedGame = false;
+let highScore = 0;
 const startmenu = document.getElementById("startmenu");
 const currentScore = document.getElementById("currentscore");
 const scoreMenu = document.getElementById("scoremenu");
@@ -69,17 +74,17 @@ const endmenu = document.getElementById("endmenu");
 const endScore = document.getElementById("endscore");
 const bestScore = document.getElementById("bestscore");
 
-let soundOn = false;
-let highScore = 0;
-
+// speed and movement variables
 let netForce = new Vector3(0, 0, 0);
 let forceApplied = false;
 let startSpeed = 0.03;
 let curSpeed = 0.03;
-let maxSpeed = 0.15;
-let speedUp = 0.00005;
+let maxSpeed = 0.13;
+let speedUp = 0.00002;
 let antiSlowDown = 0.03;
+let invincibleDistance = 0;
 
+// determine if start menu should be displayed
 const startGame = event => {
     if (!showMenu) {
         startmenu.classList.add("started");
@@ -93,6 +98,7 @@ const startGame = event => {
     }
 };
 
+// display end menu
 function endGame() {
     endmenu.classList.add("ended");
     endScore.textContent = `${scene.virusCount}`;
@@ -103,13 +109,8 @@ function endGame() {
     endedGame = true;
     scoremenu.classList.remove("started");
     curSpeed =  startSpeed;
+    // play theme song
     if (soundOn) {
-        audioLoader2.load(BC_SOUND, function( buffer ) {
-                    sound.setBuffer( buffer );
-                    sound.setLoop(false);
-                    sound.setVolume(0.4);
-                    sound.play();
-                });
         audioLoader.load(OJSONG, function( buffer ) {
             sound.setBuffer( buffer );
             sound.setLoop(true);
@@ -153,8 +154,12 @@ const onAnimationFrameHandler = (timeStamp) => {
         curSpeed += speedUp;
     }
 
+<<<<<<< HEAD
     // Move/rotate the tube past the player
     const curve = scene.tube.curves[0]; // curve defining the tube segment the player is currently in
+=======
+    const curve = scene.tube.curves[0];
+>>>>>>> 9a9764d9ec5ea538db652df558c23851fea38b36
     const length = curve.getLength();
 
     const curPoint = curve.getPoint(curTubeDist/length); // current position of the player in the tube
@@ -179,7 +184,12 @@ const onAnimationFrameHandler = (timeStamp) => {
     if (scene.sphere.invincible) { 
         invincibleDistance += curSpeed;
     }
+<<<<<<< HEAD
     // use the movement vector to move all the meshes in the tube object
+=======
+    
+    // update positions for objects in the scene
+>>>>>>> 9a9764d9ec5ea538db652df558c23851fea38b36
     [...scene.tube.meshes].forEach(obj => {
         obj.position.x += vecMove.x;
         obj.position.y += vecMove.y;
@@ -223,8 +233,9 @@ const onAnimationFrameHandler = (timeStamp) => {
         if (vpos.distanceTo(scene.sphere.position) < S_RADIUS + virus.radius + 0.01) {
     		scene.tube.removeVirus(i);
     		scene.addVirusCount();
+            // sound effect
             if (!showMenu && !endedGame && soundOn) {
-                audioLoader2.load(VIRUS_SOUND, function( buffer ) {
+                audioLoader.load(VIRUS_SOUND, function( buffer ) {
                     sound.setBuffer( buffer );
                     sound.setLoop(false);
                     sound.setVolume(0.4);
@@ -274,8 +285,9 @@ const onAnimationFrameHandler = (timeStamp) => {
                 scene.sphere.invincible = true;
                 invincibleDistance = 0;
                 bloomPass.strength = 2.0;
+                // sound effect
                 if (!showMenu && !endedGame && soundOn) {
-                    audioLoader2.load(A1_SOUND, function( buffer ) {
+                    audioLoader.load(A1_SOUND, function( buffer ) {
                         sound.setBuffer( buffer );
                         sound.setLoop(false);
                         sound.setVolume(0.4);
@@ -289,8 +301,9 @@ const onAnimationFrameHandler = (timeStamp) => {
                 } else {
                     curSpeed = startSpeed;
                 }
+                // sound effect
                 if (!showMenu && !endedGame && soundOn) {
-                    audioLoader2.load(A2_SOUND, function( buffer ) {
+                    audioLoader.load(A2_SOUND, function( buffer ) {
                         sound.setBuffer( buffer );
                         sound.setLoop(false);
                         sound.setVolume(0.4);
@@ -330,6 +343,7 @@ window.addEventListener('resize', windowResizeHandler, false);
 window.addEventListener("keydown", handleImpactEvents, false);
 window.addEventListener("keyup", handleReleaseEvents, false);
 
+// stop applying force on player
 function handleReleaseEvents(event) {
     forceApplied = false;
 }

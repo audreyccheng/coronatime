@@ -1,24 +1,11 @@
-body{
+body {
   position: relative;
   font-family: Optima;
 }
 
-img.left {
-  /*position: absolute;*/
-  width:70px;
-  height:70px;
-  vertical-align:middle;
-  /*margin-left:150px;*/
-  /*padding: 10px;*/
-}
-
-img.right {
-  /*position: absolute;*/
-  width:70px;
-  height:70px;
-  vertical-align:middle;
-  /*right:150px;
-  padding: 10px;*/
+img.sizing {
+    width:70px;
+    height:70px;
 }
 
 #startmenu {
@@ -43,7 +30,6 @@ img.right {
     font-size: 4vh;
     color: #FFFFFF;
     padding-bottom: 10px;
-    /*margin-top: -2vh;*/
 }
 .description {
     font-size: 3vh;
@@ -123,4 +109,3 @@ img.right {
 #scoremenu.started {
     display: block;
 }
-
