@@ -149,7 +149,6 @@ const onAnimationFrameHandler = (timeStamp) => {
     }
 
     scene.sphere.addForce(netForce);
-    console.log(netForce);
 
     if (curSpeed < maxSpeed) {
         curSpeed += speedUp;
