@@ -74,13 +74,17 @@ const currentSpeed = document.getElementById("currentspeed");
 
 // speed and movement variables
 let netForce = new Vector3(0, 0, 0);
-let forceApplied = false;
 let startSpeed = 0.05;
 let curSpeed = 0.05;
 let maxSpeed = 0.13;
 let speedUp = 0.00004;
 let antiSlowDown = 0.03;
 let invincibleDistance = 0;
+let EPS = 0.001;
+let leftKey = false;
+let rightKey = false;
+let upKey = false;
+let downKey = false;
 
 // determine if start menu should be displayed
 const startGame = event => {
@@ -144,9 +148,8 @@ const onAnimationFrameHandler = (timeStamp) => {
         bloomPass.strength = 0.5;
     }
 
-    if (forceApplied) {
-        scene.sphere.addForce(netForce);
-    }
+    scene.sphere.addForce(netForce);
+    console.log(netForce);
 
     if (curSpeed < maxSpeed) {
         curSpeed += speedUp;
@@ -336,7 +339,52 @@ window.addEventListener("keyup", handleReleaseEvents, false);
 
 // stop applying force on player
 function handleReleaseEvents(event) {
-    forceApplied = false;
+    // Ignore keypresses typed into a text box
+    if (event.target.tagName === "INPUT") { return; }
+
+    // The vectors to which each key code in this handler maps
+    const keyMap = {
+        ArrowUp: new Vector3(0,  0.005,  0),
+        ArrowDown: new Vector3(0,  -0.005,  0),
+        ArrowLeft: new Vector3(-0.005,  0,  0),
+        ArrowRight: new Vector3(0.005,  0,  0),
+    };
+
+    // ignore other key presses if game hasn't started
+    if (showMenu || endedGame) {
+        return;
+    }
+
+    // check only for bound keys
+    if (event.key != "ArrowUp" && event.key != "ArrowDown" && event.key != "ArrowLeft"
+      && event.key != "ArrowRight") {
+        return;
+    }
+    if (scene.sphere != null) {
+        let subForce = false;
+        if (event.key == "ArrowUp" && upKey) {
+            subForce = true;
+            upKey = false;
+        } else if (event.key == "ArrowDown" && downKey) {
+            subForce = true;
+            downKey = false;
+        } else if (event.key == "ArrowLeft" && leftKey) {
+            subForce = true;
+            leftKey = false;
+        } else if (event.key == "ArrowRight" && rightKey) {
+            subForce = true;
+            rightKey = false;
+        }
+        if (subForce) {
+            netForce.sub(keyMap[event.key]);
+        }
+        if (Math.abs(netForce.x) < EPS) {
+            netForce.x = 0;
+        }
+        if (Math.abs(netForce.y) < EPS) {
+            netForce.y = 0;
+        }    
+    }
 }
 
 function handleImpactEvents(event) {
@@ -425,7 +473,22 @@ function handleImpactEvents(event) {
 
     // move sphere position if arrow key pressed
     if (scene.sphere != null) {
-        netForce = keyMap[event.key];
-        forceApplied = true;
+        let addForce = false;
+        if (event.key == "ArrowUp" && !upKey) {
+            addForce = true;
+            upKey = true;
+        } else if (event.key == "ArrowDown" && !downKey) {
+            addForce = true;
+            downKey = true;
+        } else if (event.key == "ArrowLeft" && !leftKey) {
+            addForce = true;
+            leftKey = true;
+        } else if (event.key == "ArrowRight" && !rightKey) {
+            addForce = true;
+            rightKey = true;
+        }
+        if (addForce) {
+            netForce.add(keyMap[event.key]);
+        }
     }
 }
